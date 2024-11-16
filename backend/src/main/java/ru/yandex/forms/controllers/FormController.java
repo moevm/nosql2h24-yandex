@@ -4,10 +4,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.forms.model.Form;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.requests.FormRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,12 +26,16 @@ public class FormController {
 
     @GetMapping("/{mail}")
     public ResponseEntity<List<Form>> getForms(@PathVariable String mail){
-        return ResponseEntity.ok(formRepository.findByOwnerEmail(mail));
+        List<Form> forms = new ArrayList<>();
+        forms.addAll(formRepository.findByOwnerEmail(mail));
+        forms.addAll(formRepository.findFormsByRedactorMail(mail));
+        return ResponseEntity.ok(forms);
     }
 
     @PostMapping("/create-form")
     public ResponseEntity<Form> createForm(@RequestBody FormRequest formRequest){
         Form form = new Form();
+
         form.setOwnerEmail(formRequest.getOwnerMail());
         form.setName(formRequest.getName());
 
