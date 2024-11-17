@@ -1,5 +1,6 @@
 package ru.yandex.forms.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
+@Slf4j
 public class DataLoader implements ApplicationRunner {
 
     private final UserRepository userRepository;
@@ -34,6 +36,8 @@ public class DataLoader implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        formRepository.deleteAll();
+        userRepository.deleteAll();
         userCreation();
 
         formsCreation();
@@ -61,13 +65,16 @@ public class DataLoader implements ApplicationRunner {
             form1.setName("form1");
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
+            form1.setPath("./backend/uploads/tables/form1.xlsx");
             formRepository.save(form1);
+
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form2").isEmpty()){
             Form form2 = new Form();
             form2.setName("form2");
             form2.setOwnerEmail(SASHA_MAIL);
             form2.setRedactors(List.of(SENYA_MAIL));
+            form2.setPath("./backend/uploads/tables/form2.xlsx");
             formRepository.save(form2);
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form3").isEmpty()){
@@ -75,6 +82,7 @@ public class DataLoader implements ApplicationRunner {
             form3.setName("form3");
             form3.setOwnerEmail(SASHA_MAIL);
             form3.setRedactors(List.of(SENYA_MAIL));
+            form3.setPath("./backend/uploads/tables/form3.xlsx");
             formRepository.save(form3);
         }
     }

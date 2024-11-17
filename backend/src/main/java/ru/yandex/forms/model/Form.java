@@ -23,6 +23,8 @@ public class Form {
 
     private String name;
 
+    private String path;
+
     private List<String> redactors;
 
 }
