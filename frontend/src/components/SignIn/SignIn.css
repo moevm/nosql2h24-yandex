@@ -1,0 +1,53 @@
+.SignIn {
+    /* height: 100vh; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 100%;
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+
+    background: url(/LETI.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: #464646;
+}
+
+.In {
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;
+    flex-direction: column;
+ 
+
+    background-color: #ffffff;
+    width: 400px;
+    height: 250px;
+    border-radius: 20px;
+}
+
+.SignInSpan {
+    margin: 5px;
+    padding: 1px;
+    background-color: black;
+    color: #ffffff;
+    border-radius: 5px;
+}
+.yandex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+}
