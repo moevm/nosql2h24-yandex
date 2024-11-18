@@ -1,19 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 import YandexIcon from "/Yandex_icon.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx";
 
 export default function SignIn() {
     const dispatch = useDispatch();
-    let brokers = useSelector((state) => state.broker.brokers);
     const [input, setInput] = useState("");
 
     const navigate = useNavigate();
-    let [data1, setData1] = useState();
-    let [data2, setData2] = useState();
 
     const toTables = async () => {
         localStorage.setItem("mail", input);
@@ -24,7 +21,7 @@ export default function SignIn() {
 
             await axios.get(`http://localhost:8080/forms/${input}`).then((res) => {
                 dispatch(setBrokers(res.data));
-                setData2(res.data);
+                console.log("res - ", res.data);
             });
 
             navigate("/tables");

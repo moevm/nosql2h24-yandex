@@ -1,11 +1,11 @@
 import Header from "./Header.jsx"
 import Table from "./Table.jsx";
 import MainHeader from "./MainHeader.jsx";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from "axios"
 
 import {useDispatch, useSelector} from "react-redux";
-import {brokerSlice, setBrokers} from "../store/broker-slice.jsx"
+import { setBrokers } from "../store/broker-slice.jsx"
 
 export default function Tables() {
     const dispatch = useDispatch();
@@ -18,7 +18,7 @@ export default function Tables() {
     const handleSubmit = async () => {
     
         try {
-            let user = await axios.post("http://localhost:8080/forms/create-form", { ownerMail: mail, name: name });
+            await axios.post("http://localhost:8080/forms/create-form", { ownerMail: mail, name: name });
     
             const res = await axios.get(`http://localhost:8080/forms/${mail}`);
             dispatch(setBrokers(res.data));
@@ -43,7 +43,7 @@ export default function Tables() {
                     {(() => {
                         const options = [];
                         for (let i = 0; i < forms.length; i++) {
-                            options.push(<Table key={i} name={forms[i].name}/>);
+                            options.push(<Table id={forms[i].id} key={i} name={forms[i].name}/>);
                         }
                         return options;
                     })()}

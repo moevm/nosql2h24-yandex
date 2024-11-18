@@ -7,7 +7,6 @@ export const brokerSlice = createSlice({
     },
     reducers: {
         setBrokers: (state, action) => {
-            console.log("SLICE - ", action.payload);
             state.brokers = action.payload;
         }
     }
