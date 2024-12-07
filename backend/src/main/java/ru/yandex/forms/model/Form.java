@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "forms")
@@ -24,6 +25,8 @@ public class Form {
     private String name;
 
     private String path;
+
+    private String date;
 
     private List<String> redactors;
 

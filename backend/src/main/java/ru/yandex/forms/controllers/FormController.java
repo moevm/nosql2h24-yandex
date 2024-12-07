@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.forms.model.Form;
@@ -79,5 +78,20 @@ public class FormController {
         return formService.getTable(id);
     }
 
+
+    @Operation(
+            summary = "Поиск элементов"
+    )
+    @GetMapping("/table")
+    public ResponseEntity<List<Form>> searchForm(
+        @RequestParam(value = "table_name", required = false, defaultValue = "") String tableName,
+        @RequestParam(value = "creation_date", required = false, defaultValue = "") String date,
+        @RequestParam(value = "owner_mail", required = false, defaultValue = "") String owner,
+        @RequestParam(value = "redactor", required = false, defaultValue = "") String redactor
+    ){
+        return ResponseEntity.ok(formService.getFormsSearch(
+                tableName, date, owner, redactor
+        ));
+    }
 
 }

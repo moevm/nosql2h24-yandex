@@ -66,6 +66,7 @@ public class DataLoader implements ApplicationRunner {
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
             form1.setPath("./backend/uploads/tables/form1.xlsx");
+            form1.setDate("07.12.2024");
             formRepository.save(form1);
 
         }
@@ -75,6 +76,7 @@ public class DataLoader implements ApplicationRunner {
             form2.setOwnerEmail(SASHA_MAIL);
             form2.setRedactors(List.of(SENYA_MAIL));
             form2.setPath("./backend/uploads/tables/form2.xlsx");
+            form2.setDate("06.12.2024");
             formRepository.save(form2);
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form3").isEmpty()){
@@ -83,6 +85,7 @@ public class DataLoader implements ApplicationRunner {
             form3.setOwnerEmail(SASHA_MAIL);
             form3.setRedactors(List.of(SENYA_MAIL));
             form3.setPath("./backend/uploads/tables/form3.xlsx");
+            form3.setDate("05.12.2024");
             formRepository.save(form3);
         }
     }
