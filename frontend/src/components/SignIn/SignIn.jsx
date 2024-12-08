@@ -14,14 +14,11 @@ export default function SignIn() {
 
     const toTables = async () => {
         localStorage.setItem("mail", input);
-        console.log("mail -", input);
         try {
             let user = await axios.get(`http://localhost:8080/users/${input}`, { mail: input })
-            console.log("user", user.status);
 
             await axios.get(`http://localhost:8080/forms/${input}`).then((res) => {
                 dispatch(setBrokers(res.data));
-                console.log("res - ", res.data);
             });
 
             navigate("/tables");

@@ -150,6 +150,16 @@ main{
   margin: 40px;
 }
 
+.add_transfer{
+  display: flex;
+  align-items: center;
+  margin: 20px;
+}
+.add_transfer input + button{
+margin-left: 20px;
+}
+
+
 .exit_button{
   all: unset;
 }

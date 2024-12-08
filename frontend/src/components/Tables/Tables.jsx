@@ -34,9 +34,9 @@ export default function Tables() {
             <main>
                 <MainHeader></MainHeader>
                 
-                <div>
+                <div className="add_transfer">
                     <input type="text" className="text-field__input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Название формы"/>
-                    <button className="search_button" onClick={handleSubmit}> Добавить связь</button>
+                    <button className="search_button" onClick={handleSubmit}><strong>Добавить связь</strong></button>
                 </div>
 
                 <div className="main_tables">
