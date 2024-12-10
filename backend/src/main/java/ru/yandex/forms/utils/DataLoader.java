@@ -60,9 +60,9 @@ public class DataLoader implements ApplicationRunner {
 
     private void formsCreation(){
 
-        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form1").isEmpty()){
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/1").isEmpty()){
             Form form1 = new Form();
-            form1.setName("form1");
+            form1.setName("Домашние животные/1");
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
             form1.setPath("./backend/uploads/tables/form1.xlsx");
@@ -70,18 +70,18 @@ public class DataLoader implements ApplicationRunner {
             formRepository.save(form1);
 
         }
-        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form2").isEmpty()){
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/2").isEmpty()){
             Form form2 = new Form();
-            form2.setName("form2");
+            form2.setName("Домашние животные/2");
             form2.setOwnerEmail(SASHA_MAIL);
             form2.setRedactors(List.of(SENYA_MAIL));
             form2.setPath("./backend/uploads/tables/form2.xlsx");
             form2.setDate("06.12.2024");
             formRepository.save(form2);
         }
-        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "form3").isEmpty()){
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/3").isEmpty()){
             Form form3 = new Form();
-            form3.setName("form3");
+            form3.setName("Домашние животные/3");
             form3.setOwnerEmail(SASHA_MAIL);
             form3.setRedactors(List.of(SENYA_MAIL));
             form3.setPath("./backend/uploads/tables/form3.xlsx");
