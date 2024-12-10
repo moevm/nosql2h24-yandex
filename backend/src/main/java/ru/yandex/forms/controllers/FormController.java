@@ -5,13 +5,19 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.forms.model.Form;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.requests.FormRequest;
 import ru.yandex.forms.services.FormService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,4 +100,14 @@ public class FormController {
         ));
     }
 
+    @GetMapping("/export")
+    public ResponseEntity<byte[]> getData() {
+        return formService.exportData();
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<HttpStatus> importData(@RequestParam("jsonFile")MultipartFile file) throws IOException {
+       formService.importData(file);
+       return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 }

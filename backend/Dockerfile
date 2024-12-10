@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
+COPY uploads/tables/form1.xlsx ./uploads/tables/form1.xlsx
 RUN mvn clean package -DskipTests
 
 FROM openjdk:17-jdk-slim
