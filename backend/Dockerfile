@@ -1,14 +1,22 @@
-FROM maven:3.9.9-eclipse-temurin-21
+# Этап сборки
+FROM maven:3.9.9-eclipse-temurin-21 AS build
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-COPY src ./src
+# Копируем файл pom.xml и загружаем зависимости
 COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-RUN mvn clean package
+# Этап выполнения
+FROM openjdk:17-jdk-slim
 
-COPY ./target/*.jar app.jar
+# Устанавливаем рабочую директорию
+WORKDIR /app
 
-EXPOSE 8080
+# Копируем собранный JAR файл из этапа сборки
+COPY --from=build /app/target/*.jar app.jar
 
+# Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
