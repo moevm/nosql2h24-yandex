@@ -65,6 +65,7 @@ public class FormController {
 
         form.setOwnerEmail(formRequest.getOwnerMail());
         form.setName(formRequest.getName());
+        form.setDate("12.12.2024");
 
         return ResponseEntity.ok(formRepository.save(form));
 

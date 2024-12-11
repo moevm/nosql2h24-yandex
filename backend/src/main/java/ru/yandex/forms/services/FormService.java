@@ -3,10 +3,7 @@ package ru.yandex.forms.services;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import com.google.gson.reflect.TypeToken;
-import net.bytebuddy.description.method.MethodDescription;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,7 +12,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.forms.model.Form;
+import ru.yandex.forms.model.User;
 import ru.yandex.forms.repositories.FormRepository;
+import ru.yandex.forms.repositories.UserRepository;
+import ru.yandex.forms.model.ImportExport;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -31,11 +31,14 @@ public class FormService {
 
     private final FormRepository formRepository;
 
+    private final UserRepository userRepository;
+
     private static final String UPLOAD_DIR = "./uploads/tables/";
 
     @Autowired
-    public FormService(FormRepository formRepository) {
+    public FormService(FormRepository formRepository, UserRepository userRepository) {
         this.formRepository = formRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -76,10 +79,14 @@ public class FormService {
 
     public ResponseEntity<byte[]> exportData(){
         List<Form> forms = formRepository.findAll();
+        List<User> users = userRepository.findAll();
 
 
         Gson gson = new Gson();
-        String json = gson.toJson(forms);
+        String json = gson.toJson(ImportExport.builder()
+                        .forms(forms)
+                        .users(users)
+                .build());
         byte[] bytes = json.getBytes();
 
             return ResponseEntity.ok()
@@ -99,17 +106,17 @@ public class FormService {
         reader.close();
 
         String jsonContent = content.toString();
-        log.info(jsonContent);
-        Type listType = new TypeToken<List<Form>>(){}.getType();
-        List<Form> request = new Gson().fromJson(jsonContent, listType);
+        ImportExport request = new Gson().fromJson(jsonContent, ImportExport.class);
 
         formRepository.deleteAll();
-        formRepository.saveAll(request);
+        userRepository.deleteAll();
+        formRepository.saveAll(request.getForms());
+        userRepository.saveAll(request.getUsers());
     }
 
 
     public List<Form> getFormsSearch(String tableName, String date, String owner, String redactor){
-        return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateLikeIgnoreCase(
+        return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseOrRedactorsIsNullAndDateLikeIgnoreCase(
                 tableName, owner, redactor, date
         );
     }

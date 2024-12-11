@@ -15,7 +15,7 @@ public interface FormRepository extends MongoRepository<Form, String> {
 
     List<Form> findByOwnerEmailOrRedactors(String ownerMail, List<String> redactorsMails);
 
-    List<Form> findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateLikeIgnoreCase(
+    List<Form> findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseOrRedactorsIsNullAndDateLikeIgnoreCase(
             String tableName,
             String ownerMail,
             String redactor,
