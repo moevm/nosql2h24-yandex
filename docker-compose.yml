@@ -7,8 +7,7 @@ services:
     container_name: db
     networks:
       - app-network
-    ports:
-      - "127.0.0.1:27017:27017"
+    # Убрали строки с открытыми портами
     volumes:
       - mongo_data:/test
 
