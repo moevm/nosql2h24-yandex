@@ -47,7 +47,6 @@ export default function Tables() {
 
     const handleFileChange = async (event) => {
         const selectedFile = event.target.files[0]; // Получаем выбранный файл
-        console.log(selectedFile, "Asd");
         if (selectedFile) {
             const formData = new FormData(); // Создание объекта FormData для передачи файла
             formData.append('jsonFile', selectedFile); // Добавляем файл в форму

@@ -31,8 +31,6 @@ export default function MainHeader() {
             Object.entries(values).filter(([, value]) => value !== "")
         );
 
-        
-        console.log("tmp forms - ", forms);
         let url = new URL('http://localhost:8080/forms/table');
         const params = new URLSearchParams(filteredInitialValues);
         url.search = params.toString();
