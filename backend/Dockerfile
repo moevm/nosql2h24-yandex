@@ -1,3 +1,4 @@
+
 FROM maven:3.9.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
@@ -11,3 +12,4 @@ COPY --from=build /app/target/*.jar app.jar
 COPY uploads/tables/* /app/backend/uploads/tables/
 ENTRYPOINT ["java", "-jar", "app.jar"]
 EXPOSE 8080
+
