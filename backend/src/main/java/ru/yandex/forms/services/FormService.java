@@ -36,6 +36,7 @@ public class FormService {
     @Transactional
     public ResponseEntity<byte[]> getTable(String id){
         try {
+
             Optional<Form> optionalForm = formRepository.findById(id);
 
             if (optionalForm.isEmpty()){
@@ -48,6 +49,10 @@ public class FormService {
             File tableFile = tablePath.toFile();
 
             if (!tableFile.exists()){
+                
+                log.info(String.valueOf(tablePath.toAbsolutePath()));
+                log.info(tablePath.toString());
+
                 log.warn("Table was not found");
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

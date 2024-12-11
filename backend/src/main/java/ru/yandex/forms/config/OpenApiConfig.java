@@ -3,7 +3,6 @@ package ru.yandex.forms.config;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 
 @OpenAPIDefinition(
         info = @Info(
