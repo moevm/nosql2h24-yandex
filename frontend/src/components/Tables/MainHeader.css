@@ -90,3 +90,7 @@ input[type="text"] {
 .inputs input + input {
     margin: 20px;
 }
+
+.import-export-buttons{
+    float: right;
+}

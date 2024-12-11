@@ -99,8 +99,11 @@ public class FormService {
         reader.close();
 
         String jsonContent = content.toString();
+        log.info(jsonContent);
         Type listType = new TypeToken<List<Form>>(){}.getType();
         List<Form> request = new Gson().fromJson(jsonContent, listType);
+
+        formRepository.deleteAll();
         formRepository.saveAll(request);
     }
 

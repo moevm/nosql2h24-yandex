@@ -2,7 +2,7 @@ import "./MainHeader.css";
 import searchIcon from "/search.svg";
 
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector} from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx"
 
 export default function MainHeader() {
@@ -17,6 +17,7 @@ export default function MainHeader() {
     };
 
     const [values, setValues] = useState(initialValues);
+    let forms = useSelector((state) => state.broker.brokers);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,7 +31,8 @@ export default function MainHeader() {
             Object.entries(values).filter(([, value]) => value !== "")
         );
 
-      
+        
+        console.log("tmp forms - ", forms);
         let url = new URL('http://localhost:8080/forms/table');
         const params = new URLSearchParams(filteredInitialValues);
         url.search = params.toString();
@@ -44,9 +46,8 @@ export default function MainHeader() {
           });
           const data = await response.json();
           console.log('Ответ от сервера:', data);
-          
-
           dispatch(setBrokers(data));
+
         } catch (error) {
           console.error('Ошибка при выполнении запроса:', error);
         }
