@@ -64,6 +64,7 @@ public class FormController {
         Form form = new Form();
 
         form.setOwnerEmail(formRequest.getOwnerMail());
+
         form.setName(formRequest.getName());
         form.setDate("12.12.2024");
         form.setRedactors(new ArrayList<>());
