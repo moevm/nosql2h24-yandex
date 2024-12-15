@@ -19,6 +19,7 @@ import ru.yandex.forms.repositories.UserRepository;
 import ru.yandex.forms.model.ImportExport;
 import ru.yandex.forms.response.UserResponse;
 import ru.yandex.forms.serializer.InstantDeserializer;
+import ru.yandex.forms.serializer.InstantSerializer;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -95,7 +96,7 @@ public class FormService {
 
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Instant.class, new InstantDeserializer())
+                .registerTypeAdapter(Instant.class, new InstantSerializer())
                 .create();
         String json = gson.toJson(ImportExport.builder()
                         .forms(forms)
@@ -120,7 +121,11 @@ public class FormService {
         reader.close();
 
         String jsonContent = content.toString();
-        ImportExport request = new Gson().fromJson(jsonContent, ImportExport.class);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, new InstantDeserializer())
+                .create();
+        ImportExport request = gson.fromJson(jsonContent, ImportExport.class);
 
         formRepository.deleteAll();
         userRepository.deleteAll();
