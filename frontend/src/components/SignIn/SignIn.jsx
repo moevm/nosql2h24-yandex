@@ -26,6 +26,15 @@ export default function SignIn() {
                     "vlas_vozmitel@mail.ru": false
                   }))
             })
+            // let id = 0
+            // await axios.get(`http://localhost:8080/forms/available/redactors/${id}`).then((res) => {
+            //     console.log("res - ", res.data);
+            //     dispatch(setUsers({
+            //         "sashaOwner@mail.ru": false,
+            //         "senyaRedactor@mail.ru": false,
+            //         "vlas_vozmitel@mail.ru": false
+            //       }))
+            // })
 
             navigate("/tables");
         } catch (error) {

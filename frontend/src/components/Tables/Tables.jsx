@@ -121,16 +121,13 @@ export default function Tables() {
   };
 
   let activeForm = null;
-  const deleteForm = () => {
+  const deleteForm = async () => {
     if (activeForm) {
       console.log("удаляем activeForm и загружаем оставшиеся", activeForm);
-      // if (isCloseButton) {
-      //     let formIdToDelete = Form.dataset.id
-      //     await axios.post("http://localhost:8080/forms/delete", { ownerMail: mail, idToDelete: formIdToDelete });
+      await axios.delete(`http://localhost:8080/forms/${activeForm.id}}`);
 
-      //     const res = await axios.get(`http://localhost:8080/forms/${mail}`);
-      //     dispatch(setBrokers(res.data));
-      // }
+      const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+      dispatch(setBrokers(res.data));
     }
   };
 
@@ -193,11 +190,11 @@ export default function Tables() {
       let editModal = editModalWindow.querySelector(".edit-modal")
 
       let error = editModal.querySelector("span")
-      if(error){
+      if (error) {
         console.log("asd");
         error.innerText = `${Math.random()}`
       }
-      else{
+      else {
         let errorSpan = document.createElement("span")
         errorSpan.className = "error-message-block"
         errorSpan.innerText = "Ошибка"
