@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,21 +59,21 @@ public class FormController {
     }
 
     @Operation(
-            summary = "Создать новую форму (пока без xlsx таблицы)"
+            summary = "Создать новую форму"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Форма создана"),
     }
     )
     @PostMapping("/create-form")
-    public ResponseEntity<Form> createForm(@RequestBody FormRequest formRequest){
+    public ResponseEntity<Form> createForm(@RequestBody @Valid FormRequest formRequest){
         Form form = new Form();
 
         form.setOwnerEmail(formRequest.getOwnerMail());
 
         form.setName(formRequest.getName());
         form.setDate(Instant.now());
-        form.setRedactors(new ArrayList<>());
+        form.setRedactors(formRequest.getRedactors());
 
         return ResponseEntity.ok(formRepository.save(form));
 

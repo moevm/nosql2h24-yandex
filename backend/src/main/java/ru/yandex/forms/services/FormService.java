@@ -133,7 +133,7 @@ public class FormService {
 
     public List<Form> getFormsSearch(String tableName, String fromDate, String toDate, String owner, String redactor){
         if (toDate.isBlank()){
-            toDate = "3000-12-20 14:02:55";
+            toDate = "3000-12-20";
         }
         if (Objects.equals(redactor, "")){
             return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
@@ -197,7 +197,7 @@ public class FormService {
     private Instant convertDate(String date){
         String pattern = "yyyy-MM-dd HH:mm:ss";
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern, Locale.UK);
-        LocalDateTime localDateTime = LocalDateTime.parse(date, dateTimeFormatter);
+        LocalDateTime localDateTime = LocalDateTime.parse(date + " 00:00:00", dateTimeFormatter);
         ZoneId zoneId = ZoneId.of("UTC");
         ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
         return zonedDateTime.toInstant();
