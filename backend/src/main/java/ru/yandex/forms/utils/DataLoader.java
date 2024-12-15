@@ -71,7 +71,7 @@ public class DataLoader implements ApplicationRunner {
         }
         if (userRepository.findByEmail(DENIS_MAIL).isEmpty()){
             User userDenis = new User();
-            userDenis.setEmail(SENYA_MAIL);
+            userDenis.setEmail(DENIS_MAIL);
             userRepository.save(userDenis);
         }
         if (userRepository.findByEmail(ALISA_MAIL).isEmpty()){

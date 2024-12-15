@@ -15,6 +15,7 @@ import ru.yandex.forms.model.Form;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.requests.DeleteRedactorsRequest;
 import ru.yandex.forms.requests.FormRequest;
+import ru.yandex.forms.requests.PatchFormRequest;
 import ru.yandex.forms.requests.PatchRedactorsRequest;
 import ru.yandex.forms.response.UserResponse;
 import ru.yandex.forms.services.FormService;
@@ -68,14 +69,14 @@ public class FormController {
     @PostMapping("/create-form")
     public ResponseEntity<String> createForm(@RequestBody FormRequest formRequest){
 
-        if (formRepository.findByName(formRequest.getName()).isPresent()){
-            return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
-        }
         if (formRequest.getName().isBlank()) {
             return new ResponseEntity<>("Название формы не может быть пустым", HttpStatus.BAD_REQUEST);
         }
         if (formRequest.getTableName().isBlank()) {
             return new ResponseEntity<>("Название таблицы не может быть пустым", HttpStatus.BAD_REQUEST);
+        }
+        if (formService.isContain(formRequest.getOwnerMail(), formRequest.getTableName())){
+            return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
         }
         Form form = new Form();
 
@@ -133,6 +134,13 @@ public class FormController {
             @PathVariable @Parameter(description = "id таблицы", required = true) String id
     ){
         return formService.deleteForm(id);
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<HttpStatus> updateForm(
+            @RequestBody PatchFormRequest patchFormRequest
+            ){
+        return formService.updateForm(patchFormRequest.getFormId(), patchFormRequest.getFormName(), patchFormRequest.getTableName());
     }
 
 

@@ -179,6 +179,25 @@ public class FormService {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
+    @Transactional
+    public ResponseEntity<HttpStatus> updateForm(String formId, String formName, String tableName){
+        Optional<Form> form = formRepository.findById(formId);
+
+        if (form.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (isContain(form.get().getOwnerEmail(), formName)) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        form.get().setName(formName);
+        form.get().setTableName(tableName);
+
+        formRepository.save(form.get());
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
     @Transactional
     public ResponseEntity<HttpStatus> deleteRedactor(String mail, String formId){
@@ -208,6 +227,11 @@ public class FormService {
         ZoneId zoneId = ZoneId.of("UTC");
         ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
         return zonedDateTime.toInstant();
+    }
+
+    public boolean isContain(String userMail, String formName){
+        Optional<Form> form = formRepository.findByOwnerEmailAndName(userMail, formName);
+        return form.isPresent();
     }
 
 }
