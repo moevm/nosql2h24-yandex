@@ -1,6 +1,7 @@
 package ru.yandex.forms.services;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.repositories.UserRepository;
 import ru.yandex.forms.model.ImportExport;
 import ru.yandex.forms.response.UserResponse;
+import ru.yandex.forms.serializer.InstantDeserializer;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -92,7 +94,9 @@ public class FormService {
         List<User> users = userRepository.findAll();
 
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, new InstantDeserializer())
+                .create();
         String json = gson.toJson(ImportExport.builder()
                         .forms(forms)
                         .users(users)
