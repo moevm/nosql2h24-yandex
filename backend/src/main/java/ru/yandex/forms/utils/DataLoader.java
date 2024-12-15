@@ -27,6 +27,12 @@ public class DataLoader implements ApplicationRunner {
 
     private static final String SENYA_MAIL = "senyaRedactor@mail.ru";
 
+    private static final String VLAS_MAIL = "vlasovikZateinik@mail.ru";
+
+    private static final String DENIS_MAIL = "denzel@mail.ru";
+
+    private static final String ALISA_MAIL = "lisa228@mail.ru";
+
     @Autowired
     public DataLoader(UserRepository userRepository, FormRepository formRepository) {
         this.userRepository = userRepository;
@@ -56,6 +62,21 @@ public class DataLoader implements ApplicationRunner {
             userSenya.setEmail(SENYA_MAIL);
             userRepository.save(userSenya);
         }
+        if (userRepository.findByEmail(VLAS_MAIL).isEmpty()){
+            User userVlas = new User();
+            userVlas.setEmail(VLAS_MAIL);
+            userRepository.save(userVlas);
+        }
+        if (userRepository.findByEmail(DENIS_MAIL).isEmpty()){
+            User userDenis = new User();
+            userDenis.setEmail(SENYA_MAIL);
+            userRepository.save(userDenis);
+        }
+        if (userRepository.findByEmail(ALISA_MAIL).isEmpty()){
+            User userAlisa = new User();
+            userAlisa.setEmail(ALISA_MAIL);
+            userRepository.save(userAlisa);
+        }
     }
 
     private void formsCreation(){
@@ -63,9 +84,10 @@ public class DataLoader implements ApplicationRunner {
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/1").isEmpty()){
             Form form1 = new Form();
             form1.setName("Домашние животные/1");
+            form1.setTableName("form1");
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
-            form1.setPath("./backend/uploads/tables/form1.xlsx");
+            form1.setPath("./backend/uploads/tables/" + form1.getTableName() + ".xlsx");
             form1.setDate("07.12.2024");
             formRepository.save(form1);
 
@@ -73,18 +95,20 @@ public class DataLoader implements ApplicationRunner {
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/2").isEmpty()){
             Form form2 = new Form();
             form2.setName("Домашние животные/2");
+            form2.setTableName("Домашние животные/2");
             form2.setOwnerEmail(SASHA_MAIL);
-            form2.setRedactors(List.of(SENYA_MAIL));
-            form2.setPath("./backend/uploads/tables/form2.xlsx");
+            form2.setRedactors(List.of(SENYA_MAIL, ALISA_MAIL, DENIS_MAIL));
+            form2.setPath("./backend/uploads/tables/" + form2.getTableName() + ".xlsx");
             form2.setDate("06.12.2024");
             formRepository.save(form2);
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/3").isEmpty()){
             Form form3 = new Form();
             form3.setName("Домашние животные/3");
+            form3.setTableName("Домашние животные/3");
             form3.setOwnerEmail(SASHA_MAIL);
-            form3.setRedactors(List.of(SENYA_MAIL));
-            form3.setPath("./backend/uploads/tables/form3.xlsx");
+            form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
+            form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
             form3.setDate("05.12.2024");
             formRepository.save(form3);
         }

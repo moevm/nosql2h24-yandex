@@ -28,6 +28,8 @@ public class Form {
 
     private String date;
 
+    private String tableName;
+
     private List<String> redactors;
 
 }

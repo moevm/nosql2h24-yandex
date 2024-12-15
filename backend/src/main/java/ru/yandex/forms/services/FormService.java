@@ -16,6 +16,7 @@ import ru.yandex.forms.model.User;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.repositories.UserRepository;
 import ru.yandex.forms.model.ImportExport;
+import ru.yandex.forms.response.UserResponse;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -25,6 +26,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -115,6 +117,16 @@ public class FormService {
         userRepository.saveAll(request.getUsers());
     }
 
+    public ResponseEntity<HttpStatus> patchRedactors(String formId, List<String> redactors){
+        Optional<Form> form = formRepository.findById(formId);
+        if (form.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        form.get().setRedactors(redactors);
+        formRepository.save(form.get());
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
     public List<Form> getFormsSearch(String tableName, String date, String owner, String redactor){
 
@@ -129,6 +141,35 @@ public class FormService {
             );
         }
 
+    }
+
+    @Transactional
+    public ResponseEntity<List<UserResponse>> getUsersNoOwner(String formId){
+        Optional<Form> form = formRepository.findById(formId);
+        if (form.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(userRepository.findAll().stream()
+                .filter(user -> !Objects.equals(user.getEmail(), form.get().getOwnerEmail()))
+                .map(user -> UserResponse.builder()
+                        .email(user.getEmail())
+                        .build())
+                .collect(Collectors.toList())
+        );
+    }
+
+    @Transactional
+    public ResponseEntity<HttpStatus> deleteRedactor(String mail, String formId){
+        Optional<Form> form = formRepository.findById(formId);
+        if (form.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        form.get().setRedactors(form.get().getRedactors().stream().filter(
+                red -> !red.equals(mail)
+        )
+                .collect(Collectors.toList()));
+        formRepository.save(form.get());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private MediaType getMediaType(String filePath) {

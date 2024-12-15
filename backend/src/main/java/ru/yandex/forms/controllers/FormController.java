@@ -12,13 +12,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.forms.model.Form;
 import ru.yandex.forms.repositories.FormRepository;
+import ru.yandex.forms.requests.DeleteRedactorsRequest;
 import ru.yandex.forms.requests.FormRequest;
+import ru.yandex.forms.requests.PatchRedactorsRequest;
+import ru.yandex.forms.response.UserResponse;
 import ru.yandex.forms.services.FormService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -66,7 +71,7 @@ public class FormController {
         form.setOwnerEmail(formRequest.getOwnerMail());
 
         form.setName(formRequest.getName());
-        form.setDate("12.12.2024");
+        form.setDate(Date.from(Instant.now()).toString());
         form.setRedactors(new ArrayList<>());
 
         return ResponseEntity.ok(formRepository.save(form));
@@ -102,6 +107,37 @@ public class FormController {
                 tableName, date, owner, redactor
         ));
     }
+
+    @GetMapping("/available/redactors/{id}")
+    public ResponseEntity<List<UserResponse>> getUsersNoOwner(
+            @PathVariable @Parameter(description = "id таблицы", required = true) String id
+    ){
+        return formService.getUsersNoOwner(id);
+    }
+
+    @DeleteMapping("/form/redactors")
+    public ResponseEntity<HttpStatus> deleteRedactor(
+            @RequestBody DeleteRedactorsRequest deleteRedactorsRequest
+            ){
+        return formService.deleteRedactor(deleteRedactorsRequest.getUserMail(), deleteRedactorsRequest.getFormId());
+    }
+
+    @PatchMapping("/redactors")
+    public ResponseEntity<HttpStatus> patchRedactors(
+            @RequestBody PatchRedactorsRequest request
+            ) {
+        return formService.patchRedactors(request.getFormId(), request.getRedactors());
+    }
+
+    /*
+    @GetMapping("/redactors/{id}")
+    public ResponseEntity<List<UserResponse>> getRedactors(
+            @PathVariable @Parameter(description = "id таблицы", required = true) String id
+    ) {
+        return getUsersNoOwner(id);
+    }
+
+     */
 
     @GetMapping("/export")
     public ResponseEntity<byte[]> getData() {
