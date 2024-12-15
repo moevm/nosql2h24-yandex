@@ -17,6 +17,7 @@ import edit from "/edit.svg"
 import "./dropMenu.css"
 import addRedactor from "/addRedactor.svg"
 import { getCurrentDate } from "./utils.jsx";
+import { useEffect } from "react";
 
 export default function Tables() {
   const dispatch = useDispatch();
@@ -101,6 +102,7 @@ export default function Tables() {
     fileInputRef.current.click();
   };
   const handleFileChange = async (event) => {
+    console.log("asdasd");
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const formData = new FormData();
@@ -124,10 +126,13 @@ export default function Tables() {
   const deleteForm = async () => {
     if (activeForm) {
       console.log("удаляем activeForm и загружаем оставшиеся", activeForm);
-      await axios.delete(`http://localhost:8080/forms/${activeForm.id}}`);
-
+      console.log("activeForm.id", activeForm.id);
+      await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
       const res = await axios.get(`http://localhost:8080/forms/${mail}`);
       dispatch(setBrokers(res.data));
+
+      let redactorsModalWindow = document.querySelector(".delete-modal-overlay")
+      redactorsModalWindow.classList.add("delete-modal-overlay_hidden");
     }
   };
 
@@ -173,13 +178,13 @@ export default function Tables() {
       deleteModalWindow.classList.remove("delete-modal-overlay_hidden");
     }
     if (tableBut) {
-      let { id, name } = activeForm;
+      let { id, tableName } = activeForm;
       try {
         const response = await fetch(`http://localhost:8080/forms/table/${id}`);
         const arrayBuffer = await response.arrayBuffer();
         let data = new Uint8Array(arrayBuffer);
         dispatch(setXlsx(data));
-        dispatch(setName(name));
+        dispatch(setName(tableName));
         navigate('/xlsx/' + id)
       } catch (error) {
         console.error("Ошибка", error);
@@ -187,20 +192,6 @@ export default function Tables() {
     }
     if (editImg) {
       let editModalWindow = document.querySelector(".edit-modal-overlay");
-      let editModal = editModalWindow.querySelector(".edit-modal")
-
-      let error = editModal.querySelector("span")
-      if (error) {
-        console.log("asd");
-        error.innerText = `${Math.random()}`
-      }
-      else {
-        let errorSpan = document.createElement("span")
-        errorSpan.className = "error-message-block"
-        errorSpan.innerText = "Ошибка"
-        console.log("editModal", editModal);
-        editModal.insertAdjacentElement("beforeend", errorSpan)
-      }
       editModalWindow.classList.remove("edit-modal-overlay_hidden");
     }
 
@@ -224,22 +215,30 @@ export default function Tables() {
     saveBut.setAttribute("data-create", "true")
     console.log("saveBut", saveBut);
   }
-  const editForm = (event) => {
+  const editForm = async (event) => {
     event.preventDefault()
-    console.log(event.target);
-    let editInfo = event.target.querySelectorAll(".text-field__input")
-    const values = Array.from(editInfo).map(input => input.value);
 
-    const formData = Object.fromEntries(values.map((value, index) => [`${index === 0 ? 'tableName' : 'formName'}`, value]));
+    if (activeForm) {
+      let editInfo = event.target.querySelectorAll(".text-field__input")
+      const values = Array.from(editInfo).map(input => input.value);
 
-    console.log("Изменяем форму", formData);
+      const formData = Object.fromEntries(values.map((value, index) => [`${index === 0 ? 'formName' : 'tableName'}`, value]));
+      formData["formId"] = activeForm.id
 
-    editInfo.forEach((input) => {
-      input.value = ''
-    })
+      await axios.patch(`http://localhost:8080/forms/update`, formData);
+      const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+      dispatch(setBrokers(res.data));
+      console.log("new ---", res.data);
+      editInfo.forEach((input) => {
+        input.value = ''
+      })
+
+      let editModalWindow = document.querySelector(".edit-modal-overlay");
+      editModalWindow.classList.add("edit-modal-overlay_hidden");
+    }
   }
 
-  const saveRedactors = (event) => {
+  const saveRedactors = async (event) => {
     event.preventDefault()
     let saveBut = event.target
     let redactorsModalWindow = event.target.closest(".redactors-modal-overlay")
@@ -254,6 +253,11 @@ export default function Tables() {
       setNewValues({ ...newValues, "redactors": namesNewRedactors });
     }
     else {
+      if (activeForm) {
+        await axios.patch(`http://localhost:8080/forms/redactors`, { redactors: namesNewRedactors, formId: activeForm.id });
+        const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        dispatch(setBrokers(res.data));
+      }
 
       console.log("[В таблице] newRedactors - ", namesNewRedactors);
       console.log("[В таблице] отправляем косте запрос и получаем новый forms");
@@ -341,7 +345,7 @@ export default function Tables() {
                   }
                   </td>
                   <td>
-                    <Button text={form.name} ></Button>
+                    <Button text={form.tableName} ></Button>
                   </td>
                   <td className="text-center">
                     {
@@ -418,8 +422,8 @@ export default function Tables() {
           </h3>
           <form onSubmit={editForm}>
             <div className="inputs">
-              <input className="text-field__input" placeholder="Новое название таблицы"></input>
               <input className="text-field__input" placeholder="Новое название формы" ></input>
+              <input className="text-field__input" placeholder="Новое название таблицы"></input>
               {/* <input name="redactors" className="text-field__input" placeholder="Новые, редакторы" ></input> */}
             </div>
             <div className="edit-modal__buttons">
@@ -445,12 +449,12 @@ export default function Tables() {
                 </tr>
               </thead>
               <tbody>
-                {Object.entries(allUsers).map(([mail, flag], ind) => (
+                {allUsers.map((user, ind) => (
                   <tr key={ind}>
                     <td className="text-center">
-                      <input name={mail} data-flag={flag} className="checkbox" type="checkbox" />
+                      <input name={user.email} className="checkbox" type="checkbox" />
                     </td>
-                    <td>{mail}</td>
+                    <td>{user.email}</td>
                   </tr>
                 ))}
               </tbody>

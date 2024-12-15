@@ -4,11 +4,9 @@ import searchIcon from "/search.svg";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx"
-import { useSelector } from "react-redux";
 
 export default function MainHeader() {
     const dispatch = useDispatch();
-    let forms = useSelector((state) => state.broker.brokers);
 
     // Стартовые значения параметров
     const initialValues = {
