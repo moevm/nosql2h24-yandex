@@ -66,7 +66,17 @@ public class FormController {
     }
     )
     @PostMapping("/create-form")
-    public ResponseEntity<Form> createForm(@RequestBody @Valid FormRequest formRequest){
+    public ResponseEntity<String> createForm(@RequestBody FormRequest formRequest){
+
+        if (formRepository.findByName(formRequest.getName()).isPresent()){
+            return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
+        }
+        if (formRequest.getName().isBlank()) {
+            return new ResponseEntity<>("Название формы не может быть пустым", HttpStatus.BAD_REQUEST);
+        }
+        if (formRequest.getTableName().isBlank()) {
+            return new ResponseEntity<>("Название таблицы не может быть пустым", HttpStatus.BAD_REQUEST);
+        }
         Form form = new Form();
 
         form.setOwnerEmail(formRequest.getOwnerMail());
@@ -75,7 +85,8 @@ public class FormController {
         form.setDate(Instant.now());
         form.setRedactors(formRequest.getRedactors());
 
-        return ResponseEntity.ok(formRepository.save(form));
+        formRepository.save(form);
+        return ResponseEntity.ok("Создано");
 
     }
 

@@ -33,6 +33,9 @@ public interface FormRepository extends MongoRepository<Form, String> {
             Instant fromDate,
             Instant toDate
     );
+
+    Optional<Form> findByName(String name);
+
     List<Form> findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
             String tableName,
             String ownerMail,
