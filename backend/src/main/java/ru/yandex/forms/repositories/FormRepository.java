@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.yandex.forms.model.Form;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +26,19 @@ public interface FormRepository extends MongoRepository<Form, String> {
             String tableName,
             String ownerMail,
             String date
+    );
+    List<Form> findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
+            String tableName,
+            String ownerMail,
+            Instant fromDate,
+            Instant toDate
+    );
+    List<Form> findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
+            String tableName,
+            String ownerMail,
+            String redactor,
+            Instant fromDate,
+            Instant toDate
     );
 
     @Query("{\n" +
