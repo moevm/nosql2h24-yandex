@@ -87,7 +87,19 @@ public class FormService {
     }
 
     public void createXlsxFile(String filename){
+        File file = new File("./backend/uploads/tables/" + filename + ".xlsx");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public boolean isTableExist(String filename){
+        Path tablePath = Paths.get("./backend/uploads/tables/" + filename + ".xlsx");
+        File tableFile = tablePath.toFile();
+
+        return tableFile.exists();
     }
 
     public ResponseEntity<byte[]> exportData(){
@@ -189,7 +201,7 @@ public class FormService {
     }
 
     @Transactional
-    public ResponseEntity<HttpStatus> updateForm(String formId, String formName, String tableName){
+    public ResponseEntity<String> updateForm(String formId, String formName, String tableName){
         Optional<Form> form = formRepository.findById(formId);
 
         if (form.isEmpty()) {
@@ -202,6 +214,10 @@ public class FormService {
 
         form.get().setName(formName);
         form.get().setTableName(tableName);
+        if (!isTableExist(tableName)){
+            createXlsxFile(tableName);
+        }
+        form.get().setPath("./backend/uploads/tables/" + tableName + ".xlsx");
 
         formRepository.save(form.get());
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
