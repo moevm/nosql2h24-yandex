@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class Form {
 
     private String path;
 
-    private String date;
+    private Instant date;
 
     private String tableName;
 

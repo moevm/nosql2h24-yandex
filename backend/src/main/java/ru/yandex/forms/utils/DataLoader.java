@@ -11,8 +11,10 @@ import ru.yandex.forms.model.User;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.repositories.UserRepository;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -88,28 +90,28 @@ public class DataLoader implements ApplicationRunner {
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
             form1.setPath("./backend/uploads/tables/" + form1.getTableName() + ".xlsx");
-            form1.setDate("07.12.2024");
+            form1.setDate(Instant.parse("2024-12-12T15:36:50.357Z"));
             formRepository.save(form1);
 
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/2").isEmpty()){
             Form form2 = new Form();
             form2.setName("Домашние животные/2");
-            form2.setTableName("Домашние животные/2");
+            form2.setTableName("form2");
             form2.setOwnerEmail(SASHA_MAIL);
             form2.setRedactors(List.of(SENYA_MAIL, ALISA_MAIL, DENIS_MAIL));
             form2.setPath("./backend/uploads/tables/" + form2.getTableName() + ".xlsx");
-            form2.setDate("06.12.2024");
+            form2.setDate(Instant.parse("2024-12-09T15:36:50.357Z"));
             formRepository.save(form2);
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/3").isEmpty()){
             Form form3 = new Form();
             form3.setName("Домашние животные/3");
-            form3.setTableName("Домашние животные/3");
+            form3.setTableName("form3");
             form3.setOwnerEmail(SASHA_MAIL);
             form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
             form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
-            form3.setDate("05.12.2024");
+            form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
             formRepository.save(form3);
         }
     }

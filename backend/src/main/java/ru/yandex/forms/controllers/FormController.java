@@ -71,7 +71,7 @@ public class FormController {
         form.setOwnerEmail(formRequest.getOwnerMail());
 
         form.setName(formRequest.getName());
-        form.setDate(Date.from(Instant.now()).toString());
+        form.setDate(Instant.now());
         form.setRedactors(new ArrayList<>());
 
         return ResponseEntity.ok(formRepository.save(form));
@@ -99,12 +99,13 @@ public class FormController {
     @GetMapping("/table")
     public ResponseEntity<List<Form>> searchForm(
         @RequestParam(value = "table_name", required = false, defaultValue = "") String tableName,
-        @RequestParam(value = "creation_date", required = false, defaultValue = "") String date,
+        @RequestParam(value = "from_date", required = false, defaultValue = "") String fromDate,
+        @RequestParam(value = "to_date", required = false, defaultValue = "") String toDate,
         @RequestParam(value = "owner_mail", required = false, defaultValue = "") String owner,
         @RequestParam(value = "redactor", required = false, defaultValue = "") String redactor
     ){
         return ResponseEntity.ok(formService.getFormsSearch(
-                tableName, date, owner, redactor
+                tableName, fromDate, toDate, owner, redactor
         ));
     }
 

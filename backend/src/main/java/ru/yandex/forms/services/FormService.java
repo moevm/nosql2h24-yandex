@@ -23,9 +23,12 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,16 +131,18 @@ public class FormService {
     }
 
 
-    public List<Form> getFormsSearch(String tableName, String date, String owner, String redactor){
-
+    public List<Form> getFormsSearch(String tableName, String fromDate, String toDate, String owner, String redactor){
+        if (toDate.isBlank()){
+            toDate = "3000-12-20 14:02:55";
+        }
         if (Objects.equals(redactor, "")){
-            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateLikeIgnoreCase(
-                    tableName, owner, date
+            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
+                    tableName, owner, convertDate(fromDate), convertDate(toDate)
             );
         }
         else {
-            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateLikeIgnoreCase(
-                    tableName, owner, redactor, date
+            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
+                    tableName, owner, redactor, convertDate(fromDate), convertDate(toDate)
             );
         }
 
@@ -187,6 +192,15 @@ public class FormService {
             return MediaType.MULTIPART_FORM_DATA;
         }
         return MediaType.APPLICATION_OCTET_STREAM;
+    }
+
+    private Instant convertDate(String date){
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(pattern, Locale.UK);
+        LocalDateTime localDateTime = LocalDateTime.parse(date, dateTimeFormatter);
+        ZoneId zoneId = ZoneId.of("UTC");
+        ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+        return zonedDateTime.toInstant();
     }
 
 }
