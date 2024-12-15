@@ -136,6 +136,9 @@ public class FormService {
 
 
     public List<Form> getFormsSearch(String tableName, String fromDate, String toDate, String owner, String redactor){
+        if (fromDate.isBlank()){
+            fromDate = "1000-12-20";
+        }
         if (toDate.isBlank()){
             toDate = "3000-12-20";
         }
