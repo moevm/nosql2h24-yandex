@@ -5,6 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx";
+import { setUsers } from "../store/user-slice.jsx";
 
 export default function SignIn() {
     const dispatch = useDispatch();
@@ -19,7 +20,12 @@ export default function SignIn() {
 
             await axios.get(`http://localhost:8080/forms/${input}`).then((res) => {
                 dispatch(setBrokers(res.data));
-            });
+                dispatch(setUsers({
+                    "sashaOwner@mail.ru": false,
+                    "senyaRedactor@mail.ru": false,
+                    "vlas_vozmitel@mail.ru": false
+                  }))
+            })
 
             navigate("/tables");
         } catch (error) {

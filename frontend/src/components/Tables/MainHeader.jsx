@@ -2,7 +2,7 @@ import "./MainHeader.css";
 import searchIcon from "/search.svg";
 
 import { useState } from "react";
-import { useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx"
 
 export default function MainHeader() {
@@ -34,22 +34,32 @@ export default function MainHeader() {
         let url = new URL('http://localhost:8080/forms/table');
         const params = new URLSearchParams(filteredInitialValues);
         url.search = params.toString();
-      
+
         try {
-          const response = await fetch(url.href, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
-          const data = await response.json();
-          console.log('Ответ от сервера:', data);
-          dispatch(setBrokers(data));
+            const response = await fetch(url.href, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await response.json();
+            console.log('Ответ от сервера:', data);
+            dispatch(setBrokers(data));
 
         } catch (error) {
-          console.error('Ошибка при выполнении запроса:', error);
+            console.error('Ошибка при выполнении запроса:', error);
         }
-      };
+    };
+
+    let initialDates = {
+        "before": "",
+        "after": ""
+    }
+    
+    const [selectedDate, setSelectedDate] = useState(initialDates);
+    const handleDateChange = async (event) => {
+        setSelectedDate({...selectedDate, [event.target.dataset.name]: event.target.value });
+    };
 
     return (
         <div className="main_header">
@@ -65,7 +75,7 @@ export default function MainHeader() {
                     onChange={handleChange}
                     type="text"
                     className="text-field__input"
-                    placeholder="Название таблицы"
+                    placeholder="Название формы"
                 ></input>
                 <input
                     id="owner_mail"
@@ -76,7 +86,7 @@ export default function MainHeader() {
                     className="text-field__input"
                     placeholder="Владелец"
                 ></input>
-                <input
+                {/* <input
                     id="creation_date"
                     name="creation_date"
                     value={values.creation_date}
@@ -84,7 +94,7 @@ export default function MainHeader() {
                     type="text"
                     className="text-field__input"
                     placeholder="Дата созданиия"
-                ></input>
+                ></input> */}
                 <input
                     id="redactor"
                     name="redactor"
@@ -92,13 +102,21 @@ export default function MainHeader() {
                     onChange={handleChange}
                     type="text"
                     className="text-field__input"
-                    placeholder="Реадакторы"
+                    placeholder="Редакторы"
                 ></input>
+                <div className="date-inputs">
+                    <div className="dateTitle"><p>Дата создания</p></div>
+                    <input type="date" id="date-input__before" data-name="before" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>
+
+                    <strong>-</strong>
+                    <input type="date" id="date-input__after" data-name="after" className="text-field__input" placeholder="По" onChange={handleDateChange}></input>
+                </div>
                 <button type="submit" className="search_button">
                     <img src={searchIcon}></img>
                     <strong>Поиск</strong>
                 </button>
             </form>
+
         </div>
     );
 }

@@ -1,0 +1,109 @@
+.add-modal-overlay,
+.delete-modal-overlay,
+.edit-modal-overlay,
+.redactors-modal-overlay{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgb(84, 103, 145, 0.6);
+    z-index: 1000;
+    transition: 0.2s ease;
+    opacity: 1;
+}
+.add-modal-overlay_hidden,
+.delete-modal-overlay_hidden,
+.edit-modal-overlay_hidden,
+.redactors-modal-overlay_hidden {
+    top: 100%;
+    opacity: 0;
+}
+
+.add-modal,
+.delete-modal,
+.edit-modal,
+.redactors-modal{
+    position: relative;
+    top: 0;
+    width: 50%;
+    height: fit-content;
+    padding: 15px 25px;
+
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    background-color: #546792;
+    transition: 0.3s ease-in;
+}
+
+.add-modal__question,
+.delete-modal__question,
+.edit-modal__question,
+.redactors-modal__question {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    color: #ffffff;
+    margin: 0;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.add-modal__buttons,
+.delete-modal__buttons,
+.edit-modal__buttons,
+.redactors-modal__buttons{
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+.add-modal__button,
+.delete-modal__button,
+.edit-modal__button,
+.redactors-modal__button {
+    cursor: pointer;
+
+    font-size: 2rem;
+    line-height: 2.5rem;
+
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+
+    background: none;
+    color: var(#ffffff);
+    padding: 5px 10px;
+
+    transition: 0.3s ease;
+}
+
+.add-modal__button:hover,
+.delete-modal__button:hover,
+.edit-modal__button:hover,
+.redactors-modal__button:hover {
+    box-shadow: 0 0 0 1px #ffffff;
+}
+
+.add-modal__confirm-button,
+.delete-modal__confirm-button,
+.edit-modal__confirm-button,
+.redactors-modal__confirm-button {
+    background-color: #F8604A;
+    border: 1px solid #F8604A;
+}
+
+.createBut {
+    text-align: right;
+    margin-right: 27px;
+}
+
+.cancelBut {
+    text-align: left;
+}
