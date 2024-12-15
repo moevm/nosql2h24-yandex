@@ -2,22 +2,24 @@ import "./MainHeader.css";
 import searchIcon from "/search.svg";
 
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx"
+import { useSelector } from "react-redux";
 
 export default function MainHeader() {
     const dispatch = useDispatch();
+    let forms = useSelector((state) => state.broker.brokers);
 
     // Стартовые значения параметров
     const initialValues = {
-        creation_date: "",
+        to_date:"",
+        from_date: "",  
         owner_mail: "",
         redactor: "",
         table_name: "",
     };
 
     const [values, setValues] = useState(initialValues);
-    let forms = useSelector((state) => state.broker.brokers);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,7 +28,6 @@ export default function MainHeader() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         const filteredInitialValues = Object.fromEntries(
             Object.entries(values).filter(([, value]) => value !== "")
         );
@@ -34,7 +35,7 @@ export default function MainHeader() {
         let url = new URL('http://localhost:8080/forms/table');
         const params = new URLSearchParams(filteredInitialValues);
         url.search = params.toString();
-
+        console.log("url - ", url.href);
         try {
             const response = await fetch(url.href, {
                 method: 'GET',
@@ -51,14 +52,15 @@ export default function MainHeader() {
         }
     };
 
-    let initialDates = {
-        "before": "",
-        "after": ""
-    }
+    // let initialDates = {
+    //     "before": "",
+    //     "after": ""
+    // }
     
-    const [selectedDate, setSelectedDate] = useState(initialDates);
+    //const [selectedDate, setSelectedDate] = useState(initialDates);
     const handleDateChange = async (event) => {
-        setSelectedDate({...selectedDate, [event.target.dataset.name]: event.target.value });
+        setValues({ ...values, [event.target.name]: event.target.value });
+        //setSelectedDate({...selectedDate, [event.target.name]: event.target.value });
     };
 
     return (
@@ -106,10 +108,10 @@ export default function MainHeader() {
                 ></input>
                 <div className="date-inputs">
                     <div className="dateTitle"><p>Дата создания</p></div>
-                    <input type="date" id="date-input__before" data-name="before" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>
+                    <input type="date" id="date-input__before" name="from_date" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>
 
                     <strong>-</strong>
-                    <input type="date" id="date-input__after" data-name="after" className="text-field__input" placeholder="По" onChange={handleDateChange}></input>
+                    <input type="date" id="date-input__after" name="to_date" className="text-field__input" placeholder="По" onChange={handleDateChange}></input>
                 </div>
                 <button type="submit" className="search_button">
                     <img src={searchIcon}></img>
