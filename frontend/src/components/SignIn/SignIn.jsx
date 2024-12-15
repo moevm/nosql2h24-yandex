@@ -3,13 +3,14 @@ import "./SignIn.css";
 import YandexIcon from "/Yandex_icon.svg";
 import { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx";
 import { setUsers } from "../store/user-slice.jsx";
 
 export default function SignIn() {
     const dispatch = useDispatch();
     const [input, setInput] = useState("");
+    let forms = useSelector((state) => state.broker.brokers);
 
     const navigate = useNavigate();
 
@@ -17,24 +18,16 @@ export default function SignIn() {
         localStorage.setItem("mail", input);
         try {
             let user = await axios.get(`http://localhost:8080/users/${input}`, { mail: input })
-
+            let foundItem = {}
             await axios.get(`http://localhost:8080/forms/${input}`).then((res) => {
                 dispatch(setBrokers(res.data));
-                dispatch(setUsers({
-                    "sashaOwner@mail.ru": false,
-                    "senyaRedactor@mail.ru": false,
-                    "vlas_vozmitel@mail.ru": false
-                  }))
+                foundItem = res.data.find(item => item.ownerEmail === input);
             })
-            // let id = 0
-            // await axios.get(`http://localhost:8080/forms/available/redactors/${id}`).then((res) => {
-            //     console.log("res - ", res.data);
-            //     dispatch(setUsers({
-            //         "sashaOwner@mail.ru": false,
-            //         "senyaRedactor@mail.ru": false,
-            //         "vlas_vozmitel@mail.ru": false
-            //       }))
-            // })
+
+            await axios.get(`http://localhost:8080/forms/available/redactors/${foundItem.id}`).then((res) => {
+                console.log("res - ", res.data);
+                dispatch(setUsers(res.data))
+            })
 
             navigate("/tables");
         } catch (error) {
