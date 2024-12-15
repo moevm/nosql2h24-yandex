@@ -17,7 +17,7 @@ input[type="text"] {
     /* 1 */
     line-height: inherit;
     /* 1 */
-    margin: 0;
+    margin: 10px;
     /* 2 */
 }
 
@@ -86,11 +86,26 @@ input[type="text"] {
     display: flex;
     align-items: center;
     justify-content:space-around;
-}
-.inputs input + input {
     margin: 20px;
+}
+.inputs input {
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .import-export-buttons{
     float: right;
+}
+.date-inputs{
+    width: 400px;
+}
+
+.dateTitle{
+    display: flex;
+    justify-content: center;
+    margin: 0%;
+}
+
+#date-input__before, #date-input__after{
+    width: 150px;
 }

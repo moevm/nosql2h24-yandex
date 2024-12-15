@@ -9,7 +9,7 @@ export default function App() {
       <Routes>
         <Route path={"/"} element={<SignIn />}/>
         <Route path={"/tables"} element={<Tables />}/>
-        <Route path={"/xlsx"} element={<TablesXlsx />}/>
+        <Route path="/xlsx/:id" element={<TablesXlsx />} />
       </Routes>
     </div>
   );

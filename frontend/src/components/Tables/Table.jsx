@@ -8,6 +8,7 @@ import axios from "axios"
 import { setBrokers } from "../store/broker-slice.jsx"
 
 
+
 export default function Table(props) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -26,18 +27,6 @@ export default function Table(props) {
             console.error("Ошибка", error);
         }
     }
-    
-    const testClick = async(event) => {
-        let isCloseButton = event.target.closest(".exit_button")
-        let Form = event.target.closest(".container")
-        // if (isCloseButton) {
-        //     let formIdToDelete = Form.dataset.id
-        //     await axios.post("http://localhost:8080/forms/delete", { ownerMail: mail, idToDelete: formIdToDelete });
-
-        //     const res = await axios.get(`http://localhost:8080/forms/${mail}`);
-        //     dispatch(setBrokers(res.data));
-        // }
-    }
 
 
     return (
@@ -45,7 +34,7 @@ export default function Table(props) {
             <TableHeader title={props.name} />
 
             <div className="upper_buttons" >
-                <Button text="Таблица" getTable={goTables}></Button>
+                <Button text="Таблица" click={goTables}></Button>
                 <Button text="Форма"></Button>
             </div>
             <div className="low_buttons">
