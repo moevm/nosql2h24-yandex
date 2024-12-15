@@ -17,11 +17,11 @@ import java.util.Collections;
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
-    /*
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**");
     }
+    /*
     @Bean
     public FilterRegistrationBean hiddenHttpMethodFilter() {
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new HiddenHttpMethodFilter());
