@@ -157,6 +157,16 @@ public class FormService {
                 .collect(Collectors.toList())
         );
     }
+    @Transactional
+    public ResponseEntity<HttpStatus> deleteForm(String id){
+        Optional<Form> form = formRepository.findById(id);
+        if (form.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        formRepository.delete(form.get());
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    }
+
 
     @Transactional
     public ResponseEntity<HttpStatus> deleteRedactor(String mail, String formId){

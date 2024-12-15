@@ -115,6 +115,14 @@ public class FormController {
         return formService.getUsersNoOwner(id);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<HttpStatus> deleteForm(
+            @PathVariable @Parameter(description = "id таблицы", required = true) String id
+    ){
+        return formService.deleteForm(id);
+    }
+
+
     @DeleteMapping("/form/redactors")
     public ResponseEntity<HttpStatus> deleteRedactor(
             @RequestBody DeleteRedactorsRequest deleteRedactorsRequest
