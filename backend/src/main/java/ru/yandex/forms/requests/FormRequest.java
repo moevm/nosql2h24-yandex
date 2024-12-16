@@ -21,7 +21,7 @@ public class FormRequest {
 
     @Schema(description = "Название формы")
     @NotBlank(message = "Название формы не должно быть пустым")
-    private String name;
+    private String formName;
 
     @Schema(description = "Название таблицы")
     @NotBlank(message = "Название таблицы не должно быть пустым")

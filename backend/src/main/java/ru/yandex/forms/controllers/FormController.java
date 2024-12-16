@@ -70,20 +70,20 @@ public class FormController {
     @PostMapping("/create-form")
     public ResponseEntity<String> createForm(@RequestBody FormRequest formRequest){
 
-        if (formRequest.getName().isBlank()) {
+        if (formRequest.getFormName().isBlank()) {
             return new ResponseEntity<>("Название формы не может быть пустым", HttpStatus.BAD_REQUEST);
         }
         if (formRequest.getTableName().isBlank()) {
             return new ResponseEntity<>("Название таблицы не может быть пустым", HttpStatus.BAD_REQUEST);
         }
-        if (formService.isContain(formRequest.getOwnerMail(), formRequest.getTableName())){
+        if (formService.isContain(formRequest.getOwnerMail(), formRequest.getFormName())){
             return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
         }
         Form form = new Form();
 
         form.setOwnerEmail(formRequest.getOwnerMail());
 
-        form.setName(formRequest.getName());
+        form.setName(formRequest.getFormName());
         form.setDate(Instant.now());
         form.setRedactors(formRequest.getRedactors());
         if (!formService.isTableExist(formRequest.getTableName())){
@@ -156,7 +156,7 @@ public class FormController {
         if (form.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        if (formService.isContain(form.get().getOwnerEmail(), patchFormRequest.getTableName())){
+        if (formService.isContain(form.get().getOwnerEmail(), patchFormRequest.getFormName())){
             return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
         }
 
