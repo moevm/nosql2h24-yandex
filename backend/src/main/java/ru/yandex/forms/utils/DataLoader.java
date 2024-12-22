@@ -49,24 +49,12 @@ public class DataLoader implements ApplicationRunner {
         userRepository.deleteAll();
         logRepository.deleteAll();
 
-        logCreation();
-
         userCreation();
 
         formsCreation();
 
 
 
-    }
-
-    private void logCreation() {
-        Log log = new Log();
-        log.setFormId("sampleid");
-        log.setEditAction("sampleEdit");
-        log.setEditTime(Instant.now());
-        log.setEventType("sampleType");
-        log.setEditEmail("sashaOwner@mail.ru");
-        logRepository.save(log);
     }
 
     private void userCreation(){
