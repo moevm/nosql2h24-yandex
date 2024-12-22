@@ -10,7 +10,8 @@
     box-sizing: border-box;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"] {
     font-family: inherit;
     /* 1 */
     font-size: inherit;

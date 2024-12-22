@@ -38,12 +38,13 @@ select {
 
 .filter{
     display: flex;
-}
-.ID{
-    display: flex;
-    margin-left: 20px;
+    align-items: center;
+    justify-content: space-between;
 }
 .center{
     display: flex;
     align-items: center;
+}
+#stats{
+    margin: 0px;
 }

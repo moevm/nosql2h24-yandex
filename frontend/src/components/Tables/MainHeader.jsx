@@ -2,11 +2,17 @@ import "./MainHeader.css";
 import searchIcon from "/search.svg";
 
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+
+import { useDispatch, useSelector } from "react-redux";
 import { setBrokers } from "../store/broker-slice.jsx"
+import { setSearchValues } from "../store/search-slice.jsx"
 
 export default function MainHeader() {
     const dispatch = useDispatch();
+    let serverInfo = useSelector((state) => state.broker.brokers);
+    let size = localStorage.getItem("size");
+
+    let searchValues = useSelector((state) => state.search.searchValues)
 
     // Стартовые значения параметров
     const initialValues = {
@@ -22,6 +28,7 @@ export default function MainHeader() {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setValues({ ...values, [name]: value });
+        dispatch(setSearchValues({ ...values, [name]: value }))
     };
 
     const handleSubmit = async (e) => {
@@ -29,8 +36,9 @@ export default function MainHeader() {
         const filteredInitialValues = Object.fromEntries(
             Object.entries(values).filter(([, value]) => value !== "")
         );
-
-        let url = new URL('http://localhost:8080/forms/table');
+        filteredInitialValues["size"] = size
+        filteredInitialValues["page"] = 0
+        let url = new URL(`http://localhost:8080/forms/table`);
         const params = new URLSearchParams(filteredInitialValues);
         url.search = params.toString();
         console.log("url - ", url.href);
@@ -50,15 +58,9 @@ export default function MainHeader() {
         }
     };
 
-    // let initialDates = {
-    //     "before": "",
-    //     "after": ""
-    // }
-    
-    //const [selectedDate, setSelectedDate] = useState(initialDates);
     const handleDateChange = async (event) => {
         setValues({ ...values, [event.target.name]: event.target.value });
-        //setSelectedDate({...selectedDate, [event.target.name]: event.target.value });
+        dispatch(setSearchValues({ ...values, [event.target.name]: event.target.value }))
     };
 
     return (

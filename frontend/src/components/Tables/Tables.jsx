@@ -18,13 +18,17 @@ import "./dropMenu.css"
 import addRedactor from "/addRedactor.svg"
 import { getCurrentDate } from "./utils.jsx";
 import { useEffect } from "react";
+import { setLogs } from "../store/log-slice.jsx";
 
 export default function Tables() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   let mail = localStorage.getItem("mail");
-  let forms = useSelector((state) => state.broker.brokers);
+  let serverInfo = useSelector((state) => state.broker.brokers);
+  let forms = serverInfo.forms
   let allUsers = useSelector((state) => state.user.users);
+  let size = localStorage.getItem("size");
+  let searchValues = useSelector((state) => state.search.searchValues)
 
   const initialValuesForNewLink = {
     tableName: "",
@@ -66,18 +70,15 @@ export default function Tables() {
     event.preventDefault();
     let modalWindow = document.querySelector(".add-modal-overlay");
     let errorSpan = modalWindow.querySelector(".add-error-msg")
-    
-    console.log("newValues --- ", newValues);
+
     try {
       await axios.post("http://localhost:8080/forms/create-form", newValues);
-      const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+      const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page}&size=${size}`);
       dispatch(setBrokers(res.data));
       modalWindow.classList.add("add-modal-overlay_hidden");
       errorSpan.innerText = ""
     } catch (error) {
-      console.log(error);
       errorSpan.innerText = `${error.response.data}`
-      // console.error("Ошибка при обработке форм: ", error);
     }
 
   };
@@ -119,7 +120,7 @@ export default function Tables() {
             console.log("Импорт завершен успешно!", response);
           });
 
-        const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${0}&size=${size}`);
         console.log("res data - ", res.data);
         dispatch(setBrokers(res.data));
       } catch (error) {
@@ -130,11 +131,12 @@ export default function Tables() {
 
   let activeForm = null;
   const deleteForm = async () => {
-    if (activeForm) {
-      await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
-      const res = await axios.get(`http://localhost:8080/forms/${mail}`);
-      dispatch(setBrokers(res.data));
 
+    if (activeForm) {
+      let check = (forms.length - 1) % 3 === 0 && serverInfo.page !== 0 ? 1 : 0
+      await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
+      const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page - check}&size=${size}`);
+      dispatch(setBrokers(res.data));
       let redactorsModalWindow = document.querySelector(".delete-modal-overlay")
       redactorsModalWindow.classList.add("delete-modal-overlay_hidden");
     }
@@ -236,9 +238,9 @@ export default function Tables() {
       formData["formId"] = activeForm.id
 
       try {
-        
+
         await axios.patch(`http://localhost:8080/forms/update`, formData);
-        const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page}&size=${size}`);
         dispatch(setBrokers(res.data));
         editInfo.forEach((input) => {
           input.value = ''
@@ -266,7 +268,7 @@ export default function Tables() {
     else {
       if (activeForm) {
         await axios.patch(`http://localhost:8080/forms/redactors`, { redactors: namesNewRedactors, formId: activeForm.id });
-        const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page}&size=${size}`);
         dispatch(setBrokers(res.data));
       }
     }
@@ -283,6 +285,96 @@ export default function Tables() {
     event.target.style.color = "black"
   }
 
+  function hasAllEmptyProperties(obj) {
+    const keys = Object.keys(obj);
+    for (const key of keys) {
+      if (obj[key] !== '') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  const switchPage = async (event) => {
+    let paginationButton = event.target
+    if (paginationButton.name === "forward") {
+      if (hasAllEmptyProperties(searchValues)) {
+        let page = serverInfo.page !== serverInfo.totalPage - 1 ? serverInfo.page + 1 : serverInfo.page
+
+        const url = `http://localhost:8080/forms/${mail}?page=${page}&size=${size}`;
+
+        const res = await axios.get(url);
+        dispatch(setBrokers(res.data));
+      }
+      else {
+        let url = new URL(`http://localhost:8080/forms/table`);
+        let page = serverInfo.page !== serverInfo.totalPage - 1 ? serverInfo.page + 1 : serverInfo.page
+
+        const params = new URLSearchParams({ ...searchValues, page: page, size: size });
+        console.log(params);
+        url.search = params.toString();
+
+        try {
+          const response = await fetch(url.href, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await response.json();
+          console.log('Ответ от сервера:', data);
+          dispatch(setBrokers(data));
+
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        }
+      }
+
+    }
+    else if (paginationButton.name === "back") {
+      if (serverInfo.page != 0) {
+        if (hasAllEmptyProperties(searchValues)) {
+          let page = serverInfo.page - 1
+
+          const url = `http://localhost:8080/forms/${mail}?page=${page}&size=${size}`;
+
+          const res = await axios.get(url);
+          dispatch(setBrokers(res.data));
+        }
+        else {
+          let url = new URL(`http://localhost:8080/forms/table`);
+          let page = serverInfo.page - 1
+
+          const params = new URLSearchParams({ ...searchValues, page: page, size: size });
+          url.search = params.toString();
+
+          try {
+            const response = await fetch(url.href, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            const data = await response.json();
+            console.log('Ответ от сервера:', data);
+            dispatch(setBrokers(data));
+
+          } catch (error) {
+            console.error('Ошибка при выполнении запроса:', error);
+          }
+        }
+      }
+
+    }
+  }
+  const toHistory = () => {
+    axios.get(`http://localhost:8080/logs`).then((res) => {
+      console.log(res.data);
+      dispatch(setLogs(res.data.logs))
+    })
+    navigate("/logs")
+  }
+
   return (
     <div>
       <Header />
@@ -297,15 +389,16 @@ export default function Tables() {
             <strong>Импорт</strong>
           </button>
           <button className="search_button" onClick={exportData}>
-            <strong>Экспорт</strong>
+            <strong >Экспорт</strong>
           </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            hidden
-            onChange={handleFileChange}
-          />
+          <button className="search_button" onClick={toHistory}><strong>История</strong></button>
         </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          hidden
+          onChange={handleFileChange}
+        />
 
         <div>
           <table className="table-fill">
@@ -373,6 +466,11 @@ export default function Tables() {
               ))}
             </tbody>
           </table>
+        </div>
+        <div className="pagination">
+          <Button name="back" text="<<<" click={switchPage}></Button>
+          <span><strong>{serverInfo.page + 1}</strong></span>
+          <Button name="forward" text=">>>" click={switchPage}></Button>
         </div>
       </main>
       <div className="add-modal-overlay add-modal-overlay_hidden">

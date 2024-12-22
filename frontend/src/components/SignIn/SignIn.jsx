@@ -11,6 +11,8 @@ export default function SignIn() {
     const dispatch = useDispatch();
     const [input, setInput] = useState("");
     let forms = useSelector((state) => state.broker.brokers);
+    let size = 6
+    localStorage.setItem("size", size);
 
     const navigate = useNavigate();
 
@@ -19,14 +21,21 @@ export default function SignIn() {
         try {
             let user = await axios.get(`http://localhost:8080/users/${input}`, { mail: input })
             let foundItem = {}
-            await axios.get(`http://localhost:8080/forms/${input}`).then((res) => {
+            await axios.get(`http://localhost:8080/forms/${input}?page=${0}&size=${size}`).then((res) => {
+                console.log("object", res.data);
                 dispatch(setBrokers(res.data));
-                foundItem = res.data.find(item => item.ownerEmail === input);
-            })
 
-            await axios.get(`http://localhost:8080/forms/available/redactors/${foundItem.id}`).then((res) => {
-                dispatch(setUsers(res.data))
+                foundItem = res.data.forms.find(item => item.ownerEmail === input);
             })
+            if(foundItem){
+                await axios.get(`http://localhost:8080/forms/available/redactors/${foundItem.id}`).then((res) => {
+                    dispatch(setUsers(res.data))
+                })
+            }
+            else{
+                dispatch(setUsers([]))
+            }
+
 
             navigate("/tables");
         } catch (error) {

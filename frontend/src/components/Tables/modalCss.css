@@ -1,7 +1,8 @@
 .add-modal-overlay,
 .delete-modal-overlay,
 .edit-modal-overlay,
-.redactors-modal-overlay{
+.redactors-modal-overlay,
+.stats-modal-overlay{
     position: fixed;
     left: 0;
     right: 0;
@@ -22,7 +23,8 @@
 .add-modal-overlay_hidden,
 .delete-modal-overlay_hidden,
 .edit-modal-overlay_hidden,
-.redactors-modal-overlay_hidden {
+.redactors-modal-overlay_hidden,
+.stats-modal-overlay_hidden {
     top: 100%;
     opacity: 0;
 }
@@ -42,6 +44,18 @@
     background-color: #546792;
     transition: 0.3s ease-in;
 }
+.stats-modal{
+    position: relative;
+    top: 0;
+    width: 50%;
+    height: fit-content;
+    padding: 15px 25px;
+
+    border: 2px solid #ffffff;
+    border-radius: 15px;
+    background-color: #ffffff;
+    transition: 0.3s ease-in;
+}
 
 .add-modal__question,
 .delete-modal__question,
@@ -54,11 +68,20 @@
     margin-bottom: 30px;
     text-align: center;
 }
+.stats-modal__question {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    color: #000000;
+    margin: 0;
+    margin-bottom: 30px;
+    text-align: center;
+}
 
 .add-modal__buttons,
 .delete-modal__buttons,
 .edit-modal__buttons,
-.redactors-modal__buttons{
+.redactors-modal__buttons,
+.stats-modal__buttons{
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -68,7 +91,8 @@
 .add-modal__button,
 .delete-modal__button,
 .edit-modal__button,
-.redactors-modal__button {
+.redactors-modal__button,
+.stats-modal__button {
     cursor: pointer;
 
     font-size: 2rem;
@@ -87,14 +111,16 @@
 .add-modal__button:hover,
 .delete-modal__button:hover,
 .edit-modal__button:hover,
-.redactors-modal__button:hover {
+.redactors-modal__button:hover,
+.stats-modal__button:hover {
     box-shadow: 0 0 0 1px #ffffff;
 }
 
 .add-modal__confirm-button,
 .delete-modal__confirm-button,
 .edit-modal__confirm-button,
-.redactors-modal__confirm-button {
+.redactors-modal__confirm-button,
+.stats-modal__confirm-button {
     background-color: #F8604A;
     border: 1px solid #F8604A;
 }
