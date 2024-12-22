@@ -25,7 +25,6 @@ export default function SignIn() {
             })
 
             await axios.get(`http://localhost:8080/forms/available/redactors/${foundItem.id}`).then((res) => {
-                console.log("res - ", res.data);
                 dispatch(setUsers(res.data))
             })
 

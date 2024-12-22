@@ -76,7 +76,7 @@ public class FormController {
             return new ResponseEntity<>("Название таблицы не может быть пустым", HttpStatus.BAD_REQUEST);
         }
         if (formService.isContain(formRequest.getOwnerMail(), formRequest.getFormName())){
-            return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Название формы не уникальное", HttpStatus.BAD_REQUEST);
         }
         Form form = new Form();
 
@@ -88,7 +88,7 @@ public class FormController {
         if (!formService.isTableExist(formRequest.getTableName())){
             formService.createXlsxFile(formRequest.getTableName());
         }
-        form.setPath("./backend/uploads/tables/" + formRequest.getTableName() + ".xlsx");
+        form.setPath("./uploads/tables/" + formRequest.getTableName() + ".xlsx");
         form.setTableName(formRequest.getTableName());
 
         formRepository.save(form);
@@ -159,7 +159,7 @@ public class FormController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         if (formService.isContain(form.get().getOwnerEmail(), patchFormRequest.getFormName())){
-            return new ResponseEntity<>("Название таблицы не уникальное", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Название формы не уникальное", HttpStatus.BAD_REQUEST);
         }
 
         return formService.updateForm(patchFormRequest.getFormId(), patchFormRequest.getFormName(), patchFormRequest.getTableName());

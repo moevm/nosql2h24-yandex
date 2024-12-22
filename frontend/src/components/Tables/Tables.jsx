@@ -27,11 +27,10 @@ export default function Tables() {
   let allUsers = useSelector((state) => state.user.users);
 
   const initialValuesForNewLink = {
-    table_name: "",
-    form_name: "",
-    redactors: "",
-    creation_date: getCurrentDate("-"),
-    owner_mail: `${mail}`,
+    tableName: "",
+    formName: "",
+    redactors: [],
+    ownerMail: `${mail}`,
   };
   const [newValues, setNewValues] = useState(initialValuesForNewLink);
 
@@ -64,25 +63,31 @@ export default function Tables() {
     setNewValues({ ...newValues, [name]: value });
   };
   const sendNewLink = async (event) => {
-    let modalWindow = document.querySelector(".add-modal-overlay");
     event.preventDefault();
-    console.log("new - ", newValues);
+    let modalWindow = document.querySelector(".add-modal-overlay");
+    let errorSpan = modalWindow.querySelector(".add-error-msg")
+    
+    console.log("newValues --- ", newValues);
     try {
-      await axios.post("http://localhost:8080/forms/create-form", {
-        ownerMail: mail,
-        name: newValues.table_name,
-      });
-
+      await axios.post("http://localhost:8080/forms/create-form", newValues);
       const res = await axios.get(`http://localhost:8080/forms/${mail}`);
       dispatch(setBrokers(res.data));
+      modalWindow.classList.add("add-modal-overlay_hidden");
+      errorSpan.innerText = ""
     } catch (error) {
-      console.error("Ошибка при обработке форм: ", error);
+      console.log(error);
+      errorSpan.innerText = `${error.response.data}`
+      // console.error("Ошибка при обработке форм: ", error);
     }
-    modalWindow.classList.add("add-modal-overlay_hidden");
+
   };
   const handleSubmit = () => {
     let modalWindow = document.querySelector(".add-modal-overlay");
     modalWindow.classList.remove("add-modal-overlay_hidden");
+    let addErrorSpan = modalWindow.querySelector(".add-error-msg")
+    addErrorSpan.innerText = ""
+
+    setNewValues({ ...newValues, "redactors": [] });
   };
 
   const exportData = () => {
@@ -99,10 +104,10 @@ export default function Tables() {
   };
   const fileInputRef = useRef(null);
   const importData = () => {
+    fileInputRef.current.value = "";
     fileInputRef.current.click();
   };
   const handleFileChange = async (event) => {
-    console.log("asdasd");
     const selectedFile = event.target.files[0];
     if (selectedFile) {
       const formData = new FormData();
@@ -115,6 +120,7 @@ export default function Tables() {
           });
 
         const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        console.log("res data - ", res.data);
         dispatch(setBrokers(res.data));
       } catch (error) {
         console.error("Ошибка при обработке форм: ", error);
@@ -125,8 +131,6 @@ export default function Tables() {
   let activeForm = null;
   const deleteForm = async () => {
     if (activeForm) {
-      console.log("удаляем activeForm и загружаем оставшиеся", activeForm);
-      console.log("activeForm.id", activeForm.id);
       await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
       const res = await axios.get(`http://localhost:8080/forms/${mail}`);
       dispatch(setBrokers(res.data));
@@ -143,6 +147,8 @@ export default function Tables() {
     let editImg = event.target.closest(".editImg")
     let currentForm = event.target.closest("tr")
     activeForm = JSON.parse(currentForm.dataset.form);
+
+    let editErrorSpan = document.querySelector(".edit-error-msg")
 
     if (showbut) {
       let saveBut = document.querySelector('[name="saveBut"]')
@@ -191,6 +197,7 @@ export default function Tables() {
       }
     }
     if (editImg) {
+      editErrorSpan.innerText = ""
       let editModalWindow = document.querySelector(".edit-modal-overlay");
       editModalWindow.classList.remove("edit-modal-overlay_hidden");
     }
@@ -213,28 +220,34 @@ export default function Tables() {
     redactorsModalWindow.classList.remove("redactors-modal-overlay_hidden");
     let saveBut = redactorsModalWindow.querySelector('[name="saveBut"]')
     saveBut.setAttribute("data-create", "true")
-    console.log("saveBut", saveBut);
   }
   const editForm = async (event) => {
     event.preventDefault()
 
     if (activeForm) {
-      let editInfo = event.target.querySelectorAll(".text-field__input")
+      let editModalWindow = document.querySelector(".edit-modal-overlay");
+      let errorSpan = editModalWindow.querySelector(".edit-error-msg")
+
+      let editInfo = editModalWindow.querySelectorAll(".text-field__input")
+      console.log(editInfo);
       const values = Array.from(editInfo).map(input => input.value);
 
       const formData = Object.fromEntries(values.map((value, index) => [`${index === 0 ? 'formName' : 'tableName'}`, value]));
       formData["formId"] = activeForm.id
 
-      await axios.patch(`http://localhost:8080/forms/update`, formData);
-      const res = await axios.get(`http://localhost:8080/forms/${mail}`);
-      dispatch(setBrokers(res.data));
-      console.log("new ---", res.data);
-      editInfo.forEach((input) => {
-        input.value = ''
-      })
-
-      let editModalWindow = document.querySelector(".edit-modal-overlay");
-      editModalWindow.classList.add("edit-modal-overlay_hidden");
+      try {
+        
+        await axios.patch(`http://localhost:8080/forms/update`, formData);
+        const res = await axios.get(`http://localhost:8080/forms/${mail}`);
+        dispatch(setBrokers(res.data));
+        editInfo.forEach((input) => {
+          input.value = ''
+        })
+        editModalWindow.classList.add("edit-modal-overlay_hidden");
+      }
+      catch (error) {
+        errorSpan.innerText = `${error.response.data}`
+      }
     }
   }
 
@@ -245,11 +258,9 @@ export default function Tables() {
     let allCheckBoxes = redactorsModalWindow.querySelectorAll('[type="checkbox"]')
     const filteredCheckBoxes = Array.from(allCheckBoxes).filter(input => input.checked);
     const namesNewRedactors = filteredCheckBoxes.map(input => input.name);
-
+    console.log("namesNewRedactors", namesNewRedactors);
 
     if (saveBut.dataset.create) {
-      console.log("[В кнопке создания] newRedactors - ", namesNewRedactors);
-      console.log("[В кнопке создания] ждем остальных данных и отправялем");
       setNewValues({ ...newValues, "redactors": namesNewRedactors });
     }
     else {
@@ -258,9 +269,6 @@ export default function Tables() {
         const res = await axios.get(`http://localhost:8080/forms/${mail}`);
         dispatch(setBrokers(res.data));
       }
-
-      console.log("[В таблице] newRedactors - ", namesNewRedactors);
-      console.log("[В таблице] отправляем косте запрос и получаем новый forms");
     }
 
     redactorsModalWindow.classList.add("redactors-modal-overlay_hidden");
@@ -375,16 +383,16 @@ export default function Tables() {
             </h3>
             <div className="inputs">
               <input
-                name="table_name"
-                className="text-field__input"
-                onChange={handleChange}
-                placeholder="Название таблицы"
-              ></input>
-              <input
-                name="form_name"
+                name="formName"
                 className="text-field__input"
                 onChange={handleChange}
                 placeholder="Название связи (формы)"
+              ></input>
+              <input
+                name="tableName"
+                className="text-field__input"
+                onChange={handleChange}
+                placeholder="Название таблицы"
               ></input>
               <button type="button" className="button addRedactor" onClick={showAllUsers}>Настроить редакторов</button>
 
@@ -399,6 +407,7 @@ export default function Tables() {
               <Button type="button" text="Отмена" click={closeModal}></Button>
               <Button type="submit" text="Добавить связь"></Button>
             </div>
+            <span className="add-error-msg"></span>
           </form>
         </div>
       </div>
@@ -430,6 +439,7 @@ export default function Tables() {
               <Button type="button" text="Отмена" click={closeModal}></Button>
               <Button type="submit" text="Сохранить" ></Button>
             </div>
+            <span className="edit-error-msg"></span>
           </form>
 
         </div>
