@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +15,13 @@ import ru.yandex.forms.requests.DeleteRedactorsRequest;
 import ru.yandex.forms.requests.FormRequest;
 import ru.yandex.forms.requests.PatchFormRequest;
 import ru.yandex.forms.requests.PatchRedactorsRequest;
+import ru.yandex.forms.response.FormPaginationResponse;
 import ru.yandex.forms.response.UserResponse;
 import ru.yandex.forms.services.FormService;
+import ru.yandex.forms.services.LogService;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +34,12 @@ public class FormController {
 
     private final FormService formService;
 
-    public FormController(FormRepository formRepository, FormService formService) {
+    private final LogService logService;
+
+    public FormController(FormRepository formRepository, FormService formService, LogService logService) {
         this.formRepository = formRepository;
         this.formService = formService;
+        this.logService = logService;
     }
 
     @GetMapping("/{mail}")
@@ -51,13 +50,13 @@ public class FormController {
             @ApiResponse(responseCode = "200", description = "Список форм"),
     }
     )
-    public ResponseEntity<List<Form>> getForms(
-            @PathVariable @Parameter(description = "mail пользователя", required = true) String mail
+    public ResponseEntity<FormPaginationResponse> getForms(
+            @PathVariable @Parameter(description = "mail пользователя", required = true) String mail,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "3") Integer size
     ){
-        List<Form> forms = new ArrayList<>();
-        forms.addAll(formRepository.findByOwnerEmail(mail));
-        forms.addAll(formRepository.findFormsByRedactorMail(mail));
-        return ResponseEntity.ok(forms);
+
+        return ResponseEntity.ok(formService.getFormsPageable(page, size, mail));
     }
 
     @Operation(
@@ -93,6 +92,7 @@ public class FormController {
         form.setTableName(formRequest.getTableName());
 
         formRepository.save(form);
+        logService.createLog("Создание формы", "Создание", form.getOwnerEmail(), form.getId());
         return ResponseEntity.ok("Создано");
 
     }
@@ -116,15 +116,17 @@ public class FormController {
             summary = "Поиск элементов"
     )
     @GetMapping("/table")
-    public ResponseEntity<List<Form>> searchForm(
+    public ResponseEntity<FormPaginationResponse> searchForm(
         @RequestParam(value = "table_name", required = false, defaultValue = "") String tableName,
         @RequestParam(value = "from_date", required = false, defaultValue = "") String fromDate,
         @RequestParam(value = "to_date", required = false, defaultValue = "") String toDate,
         @RequestParam(value = "owner_mail", required = false, defaultValue = "") String owner,
-        @RequestParam(value = "redactor", required = false, defaultValue = "") String redactor
+        @RequestParam(value = "redactor", required = false, defaultValue = "") String redactor,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "3") Integer size
     ){
         return ResponseEntity.ok(formService.getFormsSearch(
-                tableName, fromDate, toDate, owner, redactor
+                tableName, fromDate, toDate, owner, redactor, page, size
         ));
     }
 

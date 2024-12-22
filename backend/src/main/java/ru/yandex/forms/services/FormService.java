@@ -3,8 +3,10 @@ package ru.yandex.forms.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
-import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,12 +19,12 @@ import ru.yandex.forms.model.User;
 import ru.yandex.forms.repositories.FormRepository;
 import ru.yandex.forms.repositories.UserRepository;
 import ru.yandex.forms.model.ImportExport;
+import ru.yandex.forms.response.FormPaginationResponse;
 import ru.yandex.forms.response.UserResponse;
 import ru.yandex.forms.serializer.InstantDeserializer;
 import ru.yandex.forms.serializer.InstantSerializer;
 
 import java.io.*;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,12 +44,15 @@ public class FormService {
 
     private final UserRepository userRepository;
 
+    private final LogService logService;
+
     private static final String UPLOAD_DIR = "./uploads/tables/";
 
     @Autowired
-    public FormService(FormRepository formRepository, UserRepository userRepository) {
+    public FormService(FormRepository formRepository, UserRepository userRepository, LogService logService) {
         this.formRepository = formRepository;
         this.userRepository = userRepository;
+        this.logService = logService;
     }
 
     @Transactional
@@ -76,6 +81,8 @@ public class FormService {
 
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(getMediaType(form.getPath()));
+
+            logService.createLog("Отправлена " + tablePath.toFile().getName() + " таблица", "Отправка", form.getOwnerEmail(), form.getId());
 
             return ResponseEntity.ok().headers(httpHeaders).body(tableBytes);
 
@@ -117,6 +124,7 @@ public class FormService {
                 .build());
         byte[] bytes = json.getBytes();
 
+            logService.createLog("Экспорт", "Экспорт", "", "");
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=data.json")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -144,6 +152,8 @@ public class FormService {
         userRepository.deleteAll();
         formRepository.saveAll(request.getForms());
         userRepository.saveAll(request.getUsers());
+
+        logService.createLog("Импорт", "Импорт", "", "");
     }
 
     public ResponseEntity<HttpStatus> patchRedactors(String formId, List<String> redactors){
@@ -153,11 +163,14 @@ public class FormService {
         }
         form.get().setRedactors(redactors);
         formRepository.save(form.get());
+
+        logService.createLog("Добавление таблице новых редакторов: " + redactors.toString(), "Исправление", form.get().getOwnerEmail(), formId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
 
-    public List<Form> getFormsSearch(String tableName, String fromDate, String toDate, String owner, String redactor){
+    public FormPaginationResponse getFormsSearch(String tableName, String fromDate, String toDate, String owner, String redactor, Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size);
         if (fromDate.isBlank()){
             fromDate = "1000-12-20";
         }
@@ -165,16 +178,44 @@ public class FormService {
             toDate = "3000-12-20";
         }
         if (Objects.equals(redactor, "")){
-            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
-                    tableName, owner, convertDate(fromDate), convertDate(toDate)
+            Page<Form> formsPage = formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
+                    tableName, owner, convertDate(fromDate), convertDate(toDate), pageable
             );
+            return FormPaginationResponse.builder()
+                    .forms(formsPage.getContent())
+                    .size(size)
+                    .page(page)
+                    .totalPage(formsPage.getTotalPages())
+                    .totalCount((int) formsPage.getTotalElements())
+                    .build();
         }
         else {
-            return formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
-                    tableName, owner, redactor, convertDate(fromDate), convertDate(toDate)
+            Page<Form> formsPage = formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
+                    tableName, owner, redactor, convertDate(fromDate), convertDate(toDate), pageable
             );
+            return FormPaginationResponse.builder()
+                    .forms(formsPage.getContent())
+                    .size(size)
+                    .page(page)
+                    .totalPage(formsPage.getTotalPages())
+                    .totalCount((int) formsPage.getTotalElements())
+                    .build();
         }
 
+    }
+
+    public FormPaginationResponse getFormsPageable(Integer page, Integer size, String mail){
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Form> formsPage = formRepository.findFormsByRedactorsContainsOrOwnerEmail(List.of(mail), mail, pageable);
+
+        return FormPaginationResponse.builder()
+                .forms(formsPage.getContent())
+                .size(size)
+                .page(page)
+                .totalPage(formsPage.getTotalPages())
+                .totalCount((int) formsPage.getTotalElements())
+                .build();
     }
 
     @Transactional
@@ -194,10 +235,12 @@ public class FormService {
     @Transactional
     public ResponseEntity<HttpStatus> deleteForm(String id){
         Optional<Form> form = formRepository.findById(id);
+
         if (form.isEmpty()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         formRepository.delete(form.get());
+        logService.createLog("Удаление формы с id: " + id, "Удаление", form.get().getOwnerEmail(), form.get().getId());
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
@@ -221,6 +264,7 @@ public class FormService {
         form.get().setPath("./backend/uploads/tables/" + tableName + ".xlsx");
 
         formRepository.save(form.get());
+        logService.createLog("Изменение формы с id: " + formId, "Изменение", form.get().getOwnerEmail(), formId);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 

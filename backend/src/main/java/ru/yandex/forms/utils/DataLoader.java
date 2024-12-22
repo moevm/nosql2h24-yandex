@@ -4,17 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Component;
 import ru.yandex.forms.model.Form;
+import ru.yandex.forms.model.Log;
 import ru.yandex.forms.model.User;
 import ru.yandex.forms.repositories.FormRepository;
+import ru.yandex.forms.repositories.LogRepository;
 import ru.yandex.forms.repositories.UserRepository;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -24,6 +22,8 @@ public class DataLoader implements ApplicationRunner {
     private final UserRepository userRepository;
 
     private final FormRepository formRepository;
+
+    private final LogRepository logRepository;
 
     private static final String SASHA_MAIL = "sashaOwner@mail.ru";
 
@@ -36,9 +36,10 @@ public class DataLoader implements ApplicationRunner {
     private static final String ALISA_MAIL = "lisa228@mail.ru";
 
     @Autowired
-    public DataLoader(UserRepository userRepository, FormRepository formRepository) {
+    public DataLoader(UserRepository userRepository, FormRepository formRepository, LogRepository logRepository) {
         this.userRepository = userRepository;
         this.formRepository = formRepository;
+        this.logRepository = logRepository;
     }
 
 
@@ -46,11 +47,26 @@ public class DataLoader implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         formRepository.deleteAll();
         userRepository.deleteAll();
+        logRepository.deleteAll();
+
+        logCreation();
+
         userCreation();
 
         formsCreation();
 
 
+
+    }
+
+    private void logCreation() {
+        Log log = new Log();
+        log.setFormId("sampleid");
+        log.setEditAction("sampleEdit");
+        log.setEditTime(Instant.now());
+        log.setEventType("sampleType");
+        log.setEditEmail("sashaOwner@mail.ru");
+        logRepository.save(log);
     }
 
     private void userCreation(){
