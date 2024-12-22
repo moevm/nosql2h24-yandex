@@ -134,6 +134,7 @@ span{
 }
 
 main{
+  position: relative;
   height: 900px;
   background-color: #ffffff;
   border-radius: 20px;
@@ -164,7 +165,8 @@ margin-left: 20px;
   all: unset;
 }
 .pagination{
-  /* padding-top: 10px;  */
-  width: 100%; 
-  text-align: center;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  bottom: 0;
 }

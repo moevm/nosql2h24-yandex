@@ -1,13 +1,12 @@
 import Header from "./Header.jsx";
 import MainHeader from "./MainHeader.jsx";
-import { useState } from "react";
-import axios, { all } from "axios";
+import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { useDispatch, useSelector } from "react-redux";
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { setBrokers } from "../store/broker-slice.jsx";
-import { setUsers } from "../store/user-slice.jsx";
 import { setXlsx, setName } from "../store/xlsx-slice.jsx";
 import "./modalCss.css";
 import Button from "./Button.jsx";
@@ -15,10 +14,12 @@ import "./Table.css";
 import close from "/close.svg";
 import edit from "/edit.svg"
 import "./dropMenu.css"
-import addRedactor from "/addRedactor.svg"
-import { getCurrentDate } from "./utils.jsx";
-import { useEffect } from "react";
 import { setLogs } from "../store/log-slice.jsx";
+
+import { setLogSearchValues } from "../store/logSearch-slice.jsx"
+
+import { Bar } from "react-chartjs-2";
+import Chart from "chart.js/auto";
 
 export default function Tables() {
   const dispatch = useDispatch();
@@ -56,10 +57,15 @@ export default function Tables() {
         input.value = ''
       })
     }
+    else if (event.target.closest(".stats-modal")) {
+      let statsModal = document.querySelector(".stats-modal-overlay");
+      statsModal.classList.add("stats-modal-overlay_hidden");
+    }
     else {
       let modalWindow = document.querySelector(".add-modal-overlay");
       modalWindow.classList.add("add-modal-overlay_hidden");
     }
+
   };
 
   const handleChange = (e) => {
@@ -73,13 +79,36 @@ export default function Tables() {
 
     try {
       await axios.post("http://localhost:8080/forms/create-form", newValues);
-      const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page}&size=${size}`);
-      dispatch(setBrokers(res.data));
       modalWindow.classList.add("add-modal-overlay_hidden");
       errorSpan.innerText = ""
     } catch (error) {
       errorSpan.innerText = `${error.response.data}`
     }
+    if (hasAllEmptyProperties(searchValues)) {
+      const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page}&size=${size}`);
+      dispatch(setBrokers(res.data));
+    } else {
+      let url = new URL(`http://localhost:8080/forms/table`);
+
+      const params = new URLSearchParams({ ...searchValues, page: serverInfo.page, size: size });
+      url.search = params.toString();
+
+      try {
+        const response = await fetch(url.href, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const data = await response.json();
+        console.log('Ответ от сервера:', data);
+        dispatch(setBrokers(data));
+
+      } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+      }
+    }
+
 
   };
   const handleSubmit = () => {
@@ -133,13 +162,39 @@ export default function Tables() {
   const deleteForm = async () => {
 
     if (activeForm) {
-      let check = (forms.length - 1) % 3 === 0 && serverInfo.page !== 0 ? 1 : 0
       await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
-      const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page - check}&size=${size}`);
-      dispatch(setBrokers(res.data));
-      let redactorsModalWindow = document.querySelector(".delete-modal-overlay")
-      redactorsModalWindow.classList.add("delete-modal-overlay_hidden");
+
+      if (hasAllEmptyProperties(searchValues)) {
+        let check = (forms.length - 1) % 3 === 0 && serverInfo.page !== 0 ? 1 : 0
+        const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${serverInfo.page - check}&size=${size}`);
+        dispatch(setBrokers(res.data));
+      }
+      else {
+        let check = (forms.length - 1) % 3 === 0 && serverInfo.page !== 0 ? 1 : 0
+        let url = new URL(`http://localhost:8080/forms/table`);
+
+        const params = new URLSearchParams({ ...searchValues, page: serverInfo.page - check, size: size });
+        url.search = params.toString();
+
+        try {
+          const response = await fetch(url.href, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await response.json();
+          console.log('Ответ от сервера:', data);
+          dispatch(setBrokers(data));
+
+        } catch (error) {
+          console.error('Ошибка при выполнении запроса:', error);
+        }
+      }
+
     }
+    let redactorsModalWindow = document.querySelector(".delete-modal-overlay")
+    redactorsModalWindow.classList.add("delete-modal-overlay_hidden");
   };
 
   const clicklOnTbody = async (event) => {
@@ -300,6 +355,7 @@ export default function Tables() {
     if (paginationButton.name === "forward") {
       if (hasAllEmptyProperties(searchValues)) {
         let page = serverInfo.page !== serverInfo.totalPage - 1 ? serverInfo.page + 1 : serverInfo.page
+        if (serverInfo.totalPage === 0) page = 0
 
         const url = `http://localhost:8080/forms/${mail}?page=${page}&size=${size}`;
 
@@ -309,9 +365,9 @@ export default function Tables() {
       else {
         let url = new URL(`http://localhost:8080/forms/table`);
         let page = serverInfo.page !== serverInfo.totalPage - 1 ? serverInfo.page + 1 : serverInfo.page
+        if (serverInfo.totalPage === 0) page = 0
 
         const params = new URLSearchParams({ ...searchValues, page: page, size: size });
-        console.log(params);
         url.search = params.toString();
 
         try {
@@ -367,12 +423,60 @@ export default function Tables() {
 
     }
   }
-  const toHistory = () => {
-    axios.get(`http://localhost:8080/logs`).then((res) => {
-      console.log(res.data);
-      dispatch(setLogs(res.data.logs))
-    })
-    navigate("/logs")
+  const toHistory = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/logs`);
+      const json = await response.json();
+      dispatch(setLogs(json))
+
+      dispatch(setLogSearchValues({}))
+      navigate("/logs")
+    } catch (error) {
+      console.error("Ошибка", error);
+    }
+  }
+
+  const [chart_data, setChart] = React.useState({
+    labels: [],
+    datasets: [
+      {}
+    ]
+  });
+  function groupByDate(data) {
+    const dates = [];
+    const counts = [];
+
+    data.forEach(item => {
+      const dateStr = item.date.substring(0, 10); // Берем первые 10 символов строки даты
+      if (!dates.includes(dateStr)) {
+        dates.push(dateStr);
+        counts.push(1);
+      } else {
+        const index = dates.indexOf(dateStr);
+        counts[index]++;
+      }
+    });
+
+    return [dates, counts];
+  }
+
+  const showStatsAllForms = async () => {
+    const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${0}&size=${1000}`);
+    let [dates, counts] = groupByDate(res.data.forms)
+
+    setChart({
+      labels: dates,
+      datasets: [{
+          label: 'Количество форм',
+          backgroundColor: '#F8604A',
+          borderColor: '#F8604A',
+          data: counts, // Здесь нужно заменить значения данными из вашего примера
+
+      }]
+  })
+
+    let statsModal = document.querySelector(".stats-modal-overlay");
+    statsModal.classList.remove("stats-modal-overlay_hidden");
   }
 
   return (
@@ -392,7 +496,11 @@ export default function Tables() {
             <strong >Экспорт</strong>
           </button>
           <button className="search_button" onClick={toHistory}><strong>История</strong></button>
+          <button className="search_button" onClick={showStatsAllForms} >
+            <strong >Общая статистика</strong>
+          </button>
         </div>
+
         <input
           ref={fileInputRef}
           type="file"
@@ -575,6 +683,31 @@ export default function Tables() {
               {/* <Button type="submit" text="Сохранить" click={saveRedactors} name="saveBut"></Button> */}
             </div>
           </form>
+        </div>
+      </div>
+
+      <div className="stats-modal-overlay stats-modal-overlay_hidden">
+        <div className="stats-modal">
+          <h3 className="stats-modal__question">
+            Общая статистика форм по датам
+          </h3>
+
+          <div className="diagram">
+            <Bar data={chart_data} options={{
+              scales: {
+                y: {
+                  ticks: {
+                    beginAtZero: true,
+                    stepSize: 1
+                  }
+                }
+              }
+            }} />
+          </div>
+
+          <div className="stats-modal__buttons">
+            <Button type="button" text="Закрыть" click={closeModal}></Button>
+          </div>
         </div>
       </div>
     </div>

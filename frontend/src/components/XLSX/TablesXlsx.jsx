@@ -138,7 +138,6 @@ export function TablesXlsx() {
     };
 
     useEffect(() => {
-        console.log("12334");
         if (xlsx) {
             const workbook = XLSX.read(xlsx, { type: "array" });
             const firstSheetName = workbook.SheetNames[0];

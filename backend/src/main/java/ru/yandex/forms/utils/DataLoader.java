@@ -118,5 +118,45 @@ public class DataLoader implements ApplicationRunner {
             form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
             formRepository.save(form3);
         }
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/4").isEmpty()){
+            Form form3 = new Form();
+            form3.setName("Домашние животные/4");
+            form3.setTableName("form4");
+            form3.setOwnerEmail(SASHA_MAIL);
+            form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
+            form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
+            form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
+            formRepository.save(form3);
+        }
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/5").isEmpty()){
+            Form form3 = new Form();
+            form3.setName("Домашние животные/5");
+            form3.setTableName("form5");
+            form3.setOwnerEmail(SASHA_MAIL);
+            form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
+            form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
+            form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
+            formRepository.save(form3);
+        }
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/6").isEmpty()){
+            Form form3 = new Form();
+            form3.setName("Домашние животные/6");
+            form3.setTableName("form6");
+            form3.setOwnerEmail(SASHA_MAIL);
+            form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
+            form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
+            form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
+            formRepository.save(form3);
+        }
+        if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/7").isEmpty()){
+            Form form3 = new Form();
+            form3.setName("Домашние животные/7");
+            form3.setTableName("form7");
+            form3.setOwnerEmail(SASHA_MAIL);
+            form3.setRedactors(List.of(SENYA_MAIL, VLAS_MAIL));
+            form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
+            form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
+            formRepository.save(form3);
+        }
     }
 }
