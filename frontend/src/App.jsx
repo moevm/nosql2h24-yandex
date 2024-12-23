@@ -2,7 +2,7 @@ import Tables from "./components/Tables/Tables";
 import SignIn from "./components/SignIn/SignIn";
 import {Route, Routes} from "react-router-dom";
 import { TablesXlsx } from "./components/XLSX/TablesXlsx";
-import  Logs  from "./components/Logs/Logs.jsx"
+import  Logs  from "./components/MyLogs/Logs"
 
 export default function App() {
   return (
