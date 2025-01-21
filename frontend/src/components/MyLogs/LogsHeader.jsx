@@ -67,9 +67,10 @@ export default function LogsHeader() {
             </h1>
 
             <form className="inputs" onSubmit={handleSubmit}>
-                <input name="edit_action" onChange={handleChange} type="text" className="text-field__input" placeholder="Действие" />
+                <input name="id" onChange={handleChange} type="text" className="text-field__input" placeholder="ID" />
                 <input name="event_type" onChange={handleChange} type="text" className="text-field__input" placeholder="Тип" />
                 <input name="edit_mail" onChange={handleChange} type="text" className="text-field__input" placeholder="Кто" />
+                <input name="edit_action" onChange={handleChange} type="text" className="text-field__input" placeholder="Действие" />
                 <div className="date-inputs">
                     <div className="dateTitle"><p>Дата</p></div>
                     <input type="date" id="date-input__before" name="from_date" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>

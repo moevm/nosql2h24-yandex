@@ -152,6 +152,7 @@ export default function Tables() {
         const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${0}&size=${size}`);
         console.log("res data - ", res.data);
         dispatch(setBrokers(res.data));
+        alert(`Импорт данных успешно завершен. Всего загружено элементов - ${res.data.totalCount}.`)
       } catch (error) {
         console.error("Ошибка при обработке форм: ", error);
       }

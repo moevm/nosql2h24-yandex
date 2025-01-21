@@ -35,7 +35,7 @@ input[type="date"] {
 /* стили для input */
 .text-field__input {
     height: calc(2.25rem + 2px);
-    width: calc(17rem + 2px);
+    width: calc(12.5rem + 2px);
     font-family: inherit;
     font-size: 1rem;
     font-weight: 400;

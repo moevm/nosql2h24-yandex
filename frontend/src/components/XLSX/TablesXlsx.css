@@ -60,3 +60,7 @@ tr:hover {
     display: flex;
     align-items: center;
 }
+.title{
+    display: flex;
+    align-items: center;
+}

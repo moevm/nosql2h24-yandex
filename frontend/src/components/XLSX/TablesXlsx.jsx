@@ -32,6 +32,8 @@ export function TablesXlsx() {
     const [ID, setID] = useState("");
     const [selectedOption, setSelectedOption] = useState("default");
 
+    const [amount, setAmount] = useState("");
+
     const handleIdChange = (event) => {
         setID(event.target.value);
     };
@@ -149,6 +151,7 @@ export function TablesXlsx() {
             displayData(jsonData);
             
             console.log("jsonData", jsonData);
+            setAmount(jsonData.length)
         }
     }, [xlsx]);
 
@@ -219,7 +222,11 @@ export function TablesXlsx() {
         <div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
             <div>
+                <div className="title"> 
                 <h1>{name}</h1>
+                <h3>Всего ответов на форму: {amount}</h3>
+                </div>
+                
                 <div className="filter">
                     <div className="center">
                         <button className="search_button" onClick={back}>
