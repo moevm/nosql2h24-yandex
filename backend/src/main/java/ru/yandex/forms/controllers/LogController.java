@@ -43,9 +43,10 @@ public class LogController {
             @RequestParam(value = "from_date", required = false, defaultValue = "") String fromDate,
             @RequestParam(value = "to_date", required = false, defaultValue = "") String toDate,
             @RequestParam(value = "event_type", required = false, defaultValue = "") String eventType,
+            @RequestParam(value = "form_id", required = false, defaultValue = "") String formId,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "5") Integer size
     ) {
-        return ResponseEntity.ok(logService.getLogsSearch(editAction, editMail, fromDate, toDate, eventType, page, size));
+        return ResponseEntity.ok(logService.getLogsSearch(editAction, editMail, fromDate, toDate, eventType, formId, page, size));
     }
 }

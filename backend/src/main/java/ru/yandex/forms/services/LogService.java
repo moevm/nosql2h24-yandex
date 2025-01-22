@@ -67,7 +67,7 @@ public class LogService {
         return log.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    public LogPaginationResponse getLogsSearch(String editAction, String editEmail, String fromDate, String toDate, String eventType, Integer page, Integer size){
+    public LogPaginationResponse getLogsSearch(String editAction, String editEmail, String fromDate, String toDate, String eventType, String formId, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
         if (fromDate.isBlank()){
             fromDate = "1000-12-20";
@@ -75,8 +75,8 @@ public class LogService {
         if (toDate.isBlank()){
             toDate = "3000-12-20";
         }
-            Page<Log> logsPage = logRepository.findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCase(
-                    editAction, editEmail, convertDate(fromDate), convertDate(toDate), eventType, pageable
+            Page<Log> logsPage = logRepository.findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCaseAndFormIdLike(
+                    editAction, editEmail, convertDate(fromDate), convertDate(toDate), eventType, formId, pageable
             );
             return LogPaginationResponse.builder()
                     .logs(logsPage.getContent())
