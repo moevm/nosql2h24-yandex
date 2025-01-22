@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.forms.model.Log;
 import ru.yandex.forms.response.FormPaginationResponse;
 import ru.yandex.forms.response.LogPaginationResponse;
 import ru.yandex.forms.services.LogService;
@@ -26,6 +27,13 @@ public class LogController {
     ){
 
         return ResponseEntity.ok(logService.getLogsPagination(page, size));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Log> getLogById(
+            @PathVariable String id
+    ){
+        return logService.getLogById(id);
     }
 
     @GetMapping("/search")
