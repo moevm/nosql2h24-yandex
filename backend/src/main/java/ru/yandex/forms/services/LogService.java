@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.yandex.forms.model.Form;
 import ru.yandex.forms.model.Log;
@@ -20,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -57,7 +60,14 @@ public class LogService {
                 .build();
 
     }
-    public LogPaginationResponse getLogsSearch(String editAction, String editEmail, String fromDate, String toDate, String eventType, Integer page, Integer size){
+
+    public ResponseEntity<Log> getLogById(String id){
+
+        Optional<Log> log = logRepository.findById(id);
+        return log.map(ResponseEntity::ok).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    public LogPaginationResponse getLogsSearch(String editAction, String editEmail, String fromDate, String toDate, String eventType, String formId, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
         if (fromDate.isBlank()){
             fromDate = "1000-12-20";
@@ -65,8 +75,8 @@ public class LogService {
         if (toDate.isBlank()){
             toDate = "3000-12-20";
         }
-            Page<Log> logsPage = logRepository.findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCase(
-                    editAction, editEmail, convertDate(fromDate), convertDate(toDate), eventType, pageable
+            Page<Log> logsPage = logRepository.findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCaseAndFormIdLike(
+                    editAction, editEmail, convertDate(fromDate), convertDate(toDate), eventType, formId, pageable
             );
             return LogPaginationResponse.builder()
                     .logs(logsPage.getContent())

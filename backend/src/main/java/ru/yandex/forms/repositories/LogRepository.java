@@ -9,12 +9,13 @@ import java.time.Instant;
 
 public interface LogRepository extends MongoRepository<Log, String> {
 
-    Page<Log> findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCase(
+    Page<Log> findByEditActionLikeIgnoreCaseAndEditEmailLikeIgnoreCaseAndEditTimeBetweenAndEventTypeLikeIgnoreCaseAndFormIdLike(
             String editAction,
             String editEmail,
             Instant fromDate,
             Instant toDate,
             String eventType,
+            String id,
             Pageable pageable
     );
 
