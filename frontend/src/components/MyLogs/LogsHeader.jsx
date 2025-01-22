@@ -12,6 +12,7 @@ export default function LogsHeader() {
     let logSearchValues = useSelector((state) => state.logSearch.logSearchValues)
 
     const initialValues = {
+        form_id: "",
         to_date: "",
         from_date: "",
         edit_mail: "",
@@ -67,7 +68,7 @@ export default function LogsHeader() {
             </h1>
 
             <form className="inputs" onSubmit={handleSubmit}>
-                <input name="id" onChange={handleChange} type="text" className="text-field__input" placeholder="ID" />
+                <input name="form_id" onChange={handleChange} type="text" className="text-field__input" placeholder="ID" />
                 <input name="event_type" onChange={handleChange} type="text" className="text-field__input" placeholder="Тип" />
                 <input name="edit_mail" onChange={handleChange} type="text" className="text-field__input" placeholder="Кто" />
                 <input name="edit_action" onChange={handleChange} type="text" className="text-field__input" placeholder="Действие" />

@@ -176,3 +176,9 @@ input {
     background-color: rgba(26, 26, 26, 0);
     border: none;
 }
+
+
+.stats{
+    display: flex;
+    align-items: center;
+}

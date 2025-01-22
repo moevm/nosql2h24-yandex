@@ -57,8 +57,12 @@ tr:hover {
 }
 
 .diagram{
-    display: flex;
-    align-items: center;
+    overflow: auto;
+    margin: 50px auto;
+
+    max-width: 1500px;
+    padding: 5px;
+    width: 100%;
 }
 .title{
     display: flex;

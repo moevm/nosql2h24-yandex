@@ -8,7 +8,7 @@ import searchIcon from "/search.svg";
 import Button from "../Tables/Button";
 import "../Tables/modalCss.css";
 import React, { useState } from "react";
-
+import { Line } from 'react-chartjs-2';
 import { Bar } from "react-chartjs-2";
 import Chart from "chart.js/auto";
 
@@ -203,13 +203,12 @@ export function TablesXlsx() {
         statsModal.classList.remove("stats-modal-overlay_hidden");
 
         setChart({
-            labels: dates,
+            labels: ['2024-11-17', '2024-12-10', '2024-12-17', '2024-12-18', '2024-12-19', '2024-12-20'],
             datasets: [{
                 label: 'Количество ответов',
                 backgroundColor: '#F8604A',
                 borderColor: '#F8604A',
-                data: counts, // Здесь нужно заменить значения данными из вашего примера
-
+                data: [5, 4, 3, 2, 1, 0],
             }]
         })
     };
