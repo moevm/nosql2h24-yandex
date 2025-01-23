@@ -203,12 +203,12 @@ export function TablesXlsx() {
         statsModal.classList.remove("stats-modal-overlay_hidden");
 
         setChart({
-            labels: ['2024-11-17', '2024-12-10', '2024-12-17', '2024-12-18', '2024-12-19', '2024-12-20'],
+            labels: dates,
             datasets: [{
                 label: 'Количество ответов',
                 backgroundColor: '#F8604A',
                 borderColor: '#F8604A',
-                data: [5, 4, 3, 2, 1, 0],
+                data: counts,
             }]
         })
     };

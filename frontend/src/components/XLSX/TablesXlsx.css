@@ -56,13 +56,18 @@ tr:hover {
     cursor: pointer;
 }
 
-.diagram{
-    overflow: auto;
-    margin: 50px auto;
+.stats-diagram{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
 
-    max-width: 1500px;
-    padding: 5px;
-    width: 100%;
+    width: 80%;
+    height: 80%;
+} 
+.diagram{
+    display: flex;
+    align-items: center;
 }
 .title{
     display: flex;
