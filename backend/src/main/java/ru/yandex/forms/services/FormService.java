@@ -187,7 +187,7 @@ public class FormService {
             formsPage.forEach(form -> {
                 try {
                     form.setAnswersCount(findRowCountExcel(form.getPath()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     form.setAnswersCount(0);
                 }
             });
@@ -206,7 +206,7 @@ public class FormService {
             formsPage.forEach(form -> {
                 try {
                     form.setAnswersCount(findRowCountExcel(form.getPath()));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     form.setAnswersCount(0);
                 }
             });
@@ -228,7 +228,7 @@ public class FormService {
         formsPage.forEach(form -> {
             try {
                 form.setAnswersCount(findRowCountExcel(form.getPath()));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 form.setAnswersCount(0);
             }
         });
@@ -287,7 +287,7 @@ public class FormService {
         form.get().setPath("./backend/uploads/tables/" + tableName + ".xlsx");
         try {
             form.get().setAnswersCount(findRowCountExcel(form.get().getPath()));
-        } catch (IOException e) {
+        } catch (Exception e) {
             form.get().setAnswersCount(0);
         }
 
