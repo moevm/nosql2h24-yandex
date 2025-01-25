@@ -473,13 +473,13 @@ export default function Tables() {
     setChart({
       labels: dates,
       datasets: [{
-          label: 'Количество форм',
-          backgroundColor: '#F8604A',
-          borderColor: '#F8604A',
-          data: counts, // Здесь нужно заменить значения данными из вашего примера
+        label: 'Количество форм',
+        backgroundColor: '#F8604A',
+        borderColor: '#F8604A',
+        data: counts, // Здесь нужно заменить значения данными из вашего примера
 
       }]
-  })
+    })
 
     let statsModal = document.querySelector(".stats-modal-overlay");
     statsModal.classList.remove("stats-modal-overlay_hidden");
@@ -533,6 +533,7 @@ export default function Tables() {
                 <th className="text-left">
                   <strong>Таблица</strong>
                 </th>
+                <th className="text-left tmp"><strong>Ответов</strong></th>
                 <th></th>
                 <th></th>
               </tr>
@@ -562,6 +563,7 @@ export default function Tables() {
                   <td>
                     <Button text={form.tableName} ></Button>
                   </td>
+                  <td>{form.answersCount}</td>
                   <td className="text-center">
                     {
                       <a>

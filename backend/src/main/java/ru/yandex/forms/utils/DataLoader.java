@@ -98,16 +98,28 @@ public class DataLoader implements ApplicationRunner {
             form1.setTableName("form1");
             form1.setOwnerEmail(SASHA_MAIL);
             form1.setRedactors(List.of(SENYA_MAIL));
+
             form1.setPath("./backend/uploads/tables/" + form1.getTableName() + ".xlsx");
             form1.setDate(Instant.parse("2024-12-12T15:36:50.357Z"));
             form1 = formRepository.save(form1);
             logService.createLog("Добавление таблице новых редакторов: " + form1.getRedactors().toString(), "Исправление", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
             logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(35, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now());
-            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now());
-            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(85, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(86, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(55, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form1.getId(), "Изменение", form1.getOwnerEmail(), form1.getId(), Instant.now().minus(55, ChronoUnit.DAYS));
+
+            logService.createLog("Экспорт", "Экспорт", "", "", Instant.now().minus(66, ChronoUnit.DAYS));
+            logService.createLog("Экспорт", "Экспорт", "", "", Instant.now().minus(66, ChronoUnit.DAYS));
+            logService.createLog("Экспорт", "Экспорт", "", "", Instant.now().minus(66, ChronoUnit.DAYS));
+
+            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
+            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
+            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
+            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
+
+            logService.createLog("Удаление формы", "Удаление", form1.getOwnerEmail(), "6794ee2cbe062cw8b22943fb3", Instant.now().minus(71, ChronoUnit.DAYS));
 
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/2").isEmpty()) {
@@ -119,8 +131,8 @@ public class DataLoader implements ApplicationRunner {
             form2.setPath("./backend/uploads/tables/" + form2.getTableName() + ".xlsx");
             form2.setDate(Instant.parse("2024-12-09T15:36:50.357Z"));
             form2 = formRepository.save(form2);
-            logService.createLog("Добавление таблице новых редакторов: " + form2.getRedactors().toString(), "Исправление", form2.getOwnerEmail(), form2.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form2.getId(), "Изменение", form2.getOwnerEmail(), form2.getId(), Instant.now().minus(85, ChronoUnit.DAYS));
+            logService.createLog("Добавление таблице новых редакторов: " + form2.getRedactors().toString(), "Исправление", form2.getOwnerEmail(), form2.getId(), Instant.now().minus(86, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form2.getId(), "Изменение", form2.getOwnerEmail(), form2.getId(), Instant.now().minus(86, ChronoUnit.DAYS));
             logService.createLog("Изменение формы с id: " + form2.getId(), "Изменение", form2.getOwnerEmail(), form2.getId(), Instant.now().minus(86, ChronoUnit.DAYS));
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/3").isEmpty()) {
@@ -132,9 +144,9 @@ public class DataLoader implements ApplicationRunner {
             form3.setPath("./backend/uploads/tables/" + form3.getTableName() + ".xlsx");
             form3.setDate(Instant.parse("2024-12-01T15:36:50.357Z"));
             form3 = formRepository.save(form3);
-            logService.createLog("Добавление таблице новых редакторов: " + form3.getRedactors().toString(), "Исправление", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form3.getId(), "Изменение", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(40, ChronoUnit.DAYS));
-            logService.createLog("Изменение формы с id: " + form3.getId(), "Изменение", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(35, ChronoUnit.DAYS));
+            logService.createLog("Добавление таблице новых редакторов: " + form3.getRedactors().toString(), "Исправление", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(87, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form3.getId(), "Изменение", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(87, ChronoUnit.DAYS));
+            logService.createLog("Изменение формы с id: " + form3.getId(), "Изменение", form3.getOwnerEmail(), form3.getId(), Instant.now().minus(87, ChronoUnit.DAYS));
         }
         if (formRepository.findByOwnerEmailAndName(SASHA_MAIL, "Домашние животные/4").isEmpty()) {
             Form form3 = new Form();

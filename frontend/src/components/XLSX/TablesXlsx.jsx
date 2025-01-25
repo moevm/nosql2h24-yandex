@@ -223,7 +223,7 @@ export function TablesXlsx() {
             <div>
                 <div className="title"> 
                 <h1>{name}</h1>
-                <h3>Всего ответов на форму: {amount}</h3>
+                <h3>Всего ответов на форму: {amount - 1}</h3>
                 </div>
                 
                 <div className="filter">
