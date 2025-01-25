@@ -188,7 +188,7 @@ public class FormService {
                 try {
                     form.setAnswersCount(findRowCountExcel(form.getPath()));
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    form.setAnswersCount(0);
                 }
             });
             return FormPaginationResponse.builder()
@@ -207,7 +207,7 @@ public class FormService {
                 try {
                     form.setAnswersCount(findRowCountExcel(form.getPath()));
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    form.setAnswersCount(0);
                 }
             });
             return FormPaginationResponse.builder()
@@ -229,7 +229,7 @@ public class FormService {
             try {
                 form.setAnswersCount(findRowCountExcel(form.getPath()));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                form.setAnswersCount(0);
             }
         });
         return FormPaginationResponse.builder()
@@ -288,7 +288,7 @@ public class FormService {
         try {
             form.get().setAnswersCount(findRowCountExcel(form.get().getPath()));
         } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            form.get().setAnswersCount(0);
         }
 
         formRepository.save(form.get());
