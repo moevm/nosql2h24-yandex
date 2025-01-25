@@ -197,7 +197,7 @@ export function TablesXlsx() {
 
     const showStats = () => {
         let [dates, counts] = calculateDataForChart(tmp_table)
-        console.log(counts);
+
 
         let statsModal = document.querySelector(".stats-modal-overlay");
         statsModal.classList.remove("stats-modal-overlay_hidden");

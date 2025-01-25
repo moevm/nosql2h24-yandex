@@ -21,8 +21,7 @@ const Stats = () => {
         "Изменение",
     ];
     let allUsers = useSelector((state) => state.user.users);
-    const [labels, setLabels] = useState([]);
-    const [counts, setCounts] = useState([]);
+
     let mail = localStorage.getItem("mail");
     const [chart_data, setChart] = React.useState({
         datasets: [
@@ -50,69 +49,81 @@ const Stats = () => {
     };
     let handleLogs = (e) => {
         setXValueLogs(e.target.value);
-        // if (e.target.value === "when") {
-        //     let statsModal = document.querySelector(".stats-modal-overlay");
-        //     statsModal.classList.remove("stats-modal-overlay_hidden");
-        // }
     };
+    function filterByDateRangeForms(forms, startDate, endDate) {
+        startDate = new Date(
+            startDate !== "" ? startDate + " 00:00:00" : "2000-01-01"
+        );
+        endDate = new Date(endDate !== "" ? endDate + " 23:59:59" : "3000-01-01");
+
+        const filteredForms = forms.filter(form => {
+            const formDate = new Date(form.date);
+
+            return formDate >= startDate && formDate <= endDate;
+        });
+
+        return filteredForms.reverse();
+    }
+
+    function filterByDateRangeLogs(logs, startDate, endDate) {
+        startDate = new Date(
+            startDate !== "" ? startDate + " 00:00:00" : "2000-01-01"
+        );
+        endDate = new Date(endDate !== "" ? endDate + " 23:59:59" : "3000-01-01");
+
+        const filteredLogs = logs.filter(log => {
+            const logDate = new Date(log.editTime.substring(0, 10));
+
+            return logDate >= startDate && logDate <= endDate;
+        });
+
+        return filteredLogs.reverse();
+    }
+
     let handleClick = async () => {
-        if (yValue === "forms" && xValueForms === "date") {
+        if (yValue === "forms") {
+            let X, counts = []
             const res = await axios.get(
                 `http://localhost:8080/forms/${mail}?page=${0}&size=${1000}`
             );
-            let [dates, counts] = groupByDate(res.data.forms);
+
+            let forms = filterByDateRangeForms(res.data.forms, dataValues.before, dataValues.after)
+
+            if (xValueForms === "date") {
+                [X, counts] = groupByDate(forms);
+
+            } else if (xValueForms === "redactors") {
+                [X, counts] = groupByRedactors(forms, allUsers);
+            }
             setChart({
-                labels: dates,
+                labels: X,
                 datasets: [
                     {
                         label: "Количество форм",
                         backgroundColor: "#F8604A",
                         borderColor: "#F8604A",
-                        data: counts, // Здесь нужно заменить значения данными из вашего примера
+                        data: counts,
                     },
                 ],
             });
-        } else if (yValue === "forms" && xValueForms === "redactors") {
-            const res = await axios.get(
-                `http://localhost:8080/forms/${mail}?page=${0}&size=${1000}`
-            );
-            let [emails, counts] = groupByRedactors(res.data.forms, allUsers);
-            setChart({
-                labels: emails,
-                datasets: [
-                    {
-                        label: "Количество форм",
-                        backgroundColor: "#F8604A",
-                        data: counts, // Здесь нужно заменить значения данными из вашего примера
-                    },
-                ],
-            });
-        }
-        if (yValue === "logs" && xValueLogs === "type") {
+
+        } else if (yValue === "logs") {
+            let X, counts = []
             const res = await axios.get(
                 `http://localhost:8080/logs?page=${0}&size=${10000}`
-            );
-            let [types, counts] = groupByTypes(res.data.logs, logTypes);
-            console.log(res.data.logs);
+            ); 
+            console.log("logs - ", res.data.logs);
+            let logs = filterByDateRangeLogs(res.data.logs, dataValues.before, dataValues.after)
+            console.log("filteredLogs - ", logs);
+
+            if (xValueLogs === "type") {
+                [X, counts] = groupByTypes(logs, logTypes);
+            } else if (xValueLogs === "when") {
+                [X, counts] = groupByEditTime(logs)
+            }
+
             setChart({
-                labels: types,
-                datasets: [
-                    {
-                        label: "Количество логов",
-                        backgroundColor: "#a60000",
-                        data: counts, // Здесь нужно заменить значения данными из вашего примера
-                    },
-                ],
-            });
-        } else if (yValue === "logs" && xValueLogs === "who") {
-            console.log("who");
-        } else if (yValue === "logs" && xValueLogs === "when") {
-            const res = await axios.get(
-                `http://localhost:8080/logs?page=${0}&size=${10000}`
-            );
-            let [dates, counts] = groupByEditTime(res.data.logs)
-            setChart({
-                labels: dates,
+                labels: X,
                 datasets: [
                     {
                         label: "Количество логов",
@@ -122,6 +133,7 @@ const Stats = () => {
                 ],
             });
         }
+
     };
 
     function groupByDate(data) {
@@ -243,27 +255,22 @@ const Stats = () => {
     }
 
     const initialValues = {
-        from_date: "",
-        to_date: "",
+        before: "",
+        after: "",
     };
     const [dataValues, setDateValues] = useState(initialValues);
     const handleDateChange = async (event) => {
         setDateValues({ ...dataValues, [event.target.name]: event.target.value });
     };
-    let closeModal = (event) => {
-        let statsModal = event.target.closest(".stats-modal-overlay");
-        statsModal.classList.add("stats-modal-overlay_hidden");
-    }
-
 
 
     return (
         <div>
             <h1>Общая статистика</h1>
             <div className="stats">
-            <button className="search_button" onClick={() => {navigate("/tables")}}>
-                            <strong>Вернуться</strong>
-                        </button>
+                <button className="search_button" onClick={() => { navigate("/tables") }}>
+                    <strong>Вернуться</strong>
+                </button>
                 <div className="first-select">
                     <strong>Y - </strong>
                     <select onChange={handleFirst}>
@@ -288,6 +295,13 @@ const Stats = () => {
                     </select>
                 </div>
 
+                <div className="date-inputs" >
+                    <input type="date" id="date-input__before" name="before" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>
+
+                    <strong>-</strong>
+                    <input type="date" id="date-input__after" name="after" className="text-field__input" placeholder="По" onChange={handleDateChange}></input>
+                </div>
+
                 <button className="search_button" onClick={handleClick}>
                     Отобразить
                 </button>
@@ -310,25 +324,6 @@ const Stats = () => {
                     />
                 </div>
             </main>
-
-            <div className="stats-modal-overlay stats-modal-overlay_hidden">
-                <div className="stats-modal">
-                    <h3 className="stats-modal__question">
-                        Выберите дату или диапазон
-                    </h3>
-                    <div className="date-inputs" >
-                        <input type="date" id="date-input__before" name="from_date" className="text-field__input" placeholder="С" onChange={handleDateChange}></input>
-
-                        <strong>-</strong>
-                        <input type="date" id="date-input__after" name="to_date" className="text-field__input" placeholder="По" onChange={handleDateChange}></input>
-                    </div>
-                    <div className="stats-modal__buttons">
-                        <button className="search_button date_but" onClick={closeModal}>Отмена</button>
-                        <button className="search_button date_but" onClick={closeModal}>Сохранить</button>
-                    </div>
-
-                </div>
-            </div>
         </div>
     );
 };
