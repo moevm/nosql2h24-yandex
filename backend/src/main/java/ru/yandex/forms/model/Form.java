@@ -34,6 +34,8 @@ public class Form {
 
     private String tableName;
 
+    private Integer answersCount;
+
     private List<String> redactors;
 
 }
