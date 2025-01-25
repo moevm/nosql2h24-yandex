@@ -3,6 +3,9 @@ package ru.yandex.forms.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -181,6 +184,13 @@ public class FormService {
             Page<Form> formsPage = formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndDateBetween(
                     tableName, owner, convertDate(fromDate), convertDate(toDate), pageable
             );
+            formsPage.forEach(form -> {
+                try {
+                    form.setAnswersCount(findRowCountExcel(form.getPath()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             return FormPaginationResponse.builder()
                     .forms(formsPage.getContent())
                     .size(size)
@@ -193,6 +203,13 @@ public class FormService {
             Page<Form> formsPage = formRepository.findByNameLikeIgnoreCaseAndOwnerEmailLikeIgnoreCaseAndRedactorsContainsIgnoreCaseAndDateBetweenIgnoreCase(
                     tableName, owner, redactor, convertDate(fromDate), convertDate(toDate), pageable
             );
+            formsPage.forEach(form -> {
+                try {
+                    form.setAnswersCount(findRowCountExcel(form.getPath()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             return FormPaginationResponse.builder()
                     .forms(formsPage.getContent())
                     .size(size)
@@ -208,7 +225,13 @@ public class FormService {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Form> formsPage = formRepository.findFormsByRedactorsContainsOrOwnerEmail(List.of(mail), mail, pageable);
-
+        formsPage.forEach(form -> {
+            try {
+                form.setAnswersCount(findRowCountExcel(form.getPath()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         return FormPaginationResponse.builder()
                 .forms(formsPage.getContent())
                 .size(size)
@@ -262,6 +285,11 @@ public class FormService {
             createXlsxFile(tableName);
         }
         form.get().setPath("./backend/uploads/tables/" + tableName + ".xlsx");
+        try {
+            form.get().setAnswersCount(findRowCountExcel(form.get().getPath()));
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         formRepository.save(form.get());
         logService.createLog("Изменение формы с id: " + formId, "Изменение", form.get().getOwnerEmail(), formId);
@@ -302,6 +330,12 @@ public class FormService {
     public boolean isContain(String userMail, String formName){
         Optional<Form> form = formRepository.findByOwnerEmailAndName(userMail, formName);
         return form.isPresent();
+    }
+
+    public Integer findRowCountExcel(String path) throws IOException {
+        Workbook workbook = new XSSFWorkbook(path);
+        Sheet sheet = workbook.getSheetAt(0);
+        return sheet.getPhysicalNumberOfRows() - 1;
     }
 
 }

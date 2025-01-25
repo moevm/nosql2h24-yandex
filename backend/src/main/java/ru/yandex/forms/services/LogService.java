@@ -44,6 +44,15 @@ public class LogService {
         log.setFormId(formId);
         logRepository.save(log);
     }
+    public void createLog(String editAction, String eventType, String mail, String formId, Instant time){
+        Log log = new Log();
+        log.setEditAction(editAction);
+        log.setEditTime(time);
+        log.setEventType(eventType);
+        log.setEditEmail(mail);
+        log.setFormId(formId);
+        logRepository.save(log);
+    }
 
     public LogPaginationResponse getLogsPagination(Integer page,Integer size){
 
