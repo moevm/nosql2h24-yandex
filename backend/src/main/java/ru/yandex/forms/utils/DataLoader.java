@@ -117,7 +117,7 @@ public class DataLoader implements ApplicationRunner {
             logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
             logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
             logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
-            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(70, ChronoUnit.DAYS));
+            logService.createLog("Импорт", "Импорт", "", "", Instant.now().minus(71, ChronoUnit.DAYS));
 
             logService.createLog("Удаление формы", "Удаление", form1.getOwnerEmail(), "6794ee2cbe062cw8b22943fb3", Instant.now().minus(71, ChronoUnit.DAYS));
 
