@@ -176,3 +176,14 @@ input {
     background-color: rgba(26, 26, 26, 0);
     border: none;
 }
+
+
+.stats{
+    display: flex;
+    align-items: center;
+}
+.date_but{
+    margin: unset;
+    margin: 50px;
+    margin-bottom: unset;
+}

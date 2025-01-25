@@ -27,7 +27,9 @@ export default function Tables() {
   let mail = localStorage.getItem("mail");
   let serverInfo = useSelector((state) => state.broker.brokers);
   let forms = serverInfo.forms
+  console.log("serverInfo - ", serverInfo);
   let allUsers = useSelector((state) => state.user.users);
+  console.log("allUsers - ", allUsers);
   let size = localStorage.getItem("size");
   let searchValues = useSelector((state) => state.search.searchValues)
 
@@ -152,7 +154,7 @@ export default function Tables() {
         const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${0}&size=${size}`);
         console.log("res data - ", res.data);
         dispatch(setBrokers(res.data));
-        alert(`Импорт данных успешно завершен. Всего загружено элементов - ${res.data.totalCount}.`)
+        alert(`Импорт данных успешно завершен. Всего элементов - ${res.data.totalCount}.`)
       } catch (error) {
         console.error("Ошибка при обработке форм: ", error);
       }
@@ -161,7 +163,6 @@ export default function Tables() {
 
   let activeForm = null;
   const deleteForm = async () => {
-
     if (activeForm) {
       await axios.delete(`http://localhost:8080/forms/${activeForm.id}`);
 
@@ -461,6 +462,10 @@ export default function Tables() {
     return [dates, counts];
   }
 
+  const newStats = () => {
+    navigate("/stats")
+  }
+
   const showStatsAllForms = async () => {
     const res = await axios.get(`http://localhost:8080/forms/${mail}?page=${0}&size=${1000}`);
     let [dates, counts] = groupByDate(res.data.forms)
@@ -497,7 +502,7 @@ export default function Tables() {
             <strong >Экспорт</strong>
           </button>
           <button className="search_button" onClick={toHistory}><strong>История</strong></button>
-          <button className="search_button" onClick={showStatsAllForms} >
+          <button className="search_button" onClick={newStats} >
             <strong >Общая статистика</strong>
           </button>
         </div>
